@@ -1,0 +1,29 @@
+package com.starmcc.qmdata.note;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * @author qm
+ * @date 2019/1/9 11:32
+ * @Description 数据表标识
+ */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Table {
+    /**
+     * 表名
+     *
+     * @return
+     */
+    String name() default "";
+
+    /**
+     * 数据库风格
+     *
+     * @return
+     */
+    Style style() default Style.UNDERLINE;
+}
