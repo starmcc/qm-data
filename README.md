@@ -176,9 +176,9 @@ public class UserServiceImpl implements UserService {
 > 实体类中使用框架提供的注解`@QmTable`、`@QmId`，这些注解类似于`JPA`注解的使用
 
 ```java
-@QmTable(name="qm_user")
+@Table(name="qm_user")
 public class User {
-	@QmId
+	@Id
 	private Integer id;
 	private String userName;
 	private String password;
@@ -242,7 +242,9 @@ public class User {
 
 * 属性(`style`)
 
-  > 该属性标注该实体类字段风格类型，参数类型`QmStyle`枚举类，默认为`QmStyle.HUMP`即下划线模式，如要修改为驼峰模式则提供`QmStyle.HUMP`。
+  > 该属性标注该实体类字段风格类型，参数类型`Style`枚举类。
+  >
+  > **默认为`Style.UNDERLINE`即下划线模式**，如要修改为驼峰模式则提供`Style.HUMP`。
 
 ---
 
@@ -274,3 +276,36 @@ public class User {
 * 属性(`except`)
 
   > 如果在实体类中需要排除某些字段不进行操作，则给`except`设置为`true`即可。默认为`flase`。
+
+
+
+## 已知问题解决方案
+
+### 打包后Mapper文件缺失问题
+
+在集成后，如果mapper的xml摆放在项目包中，spring boot 没有将其打包导致的问题，可以在pom.xml文件中的build节点下添加如下配置
+
+```xml
+<resources>
+    <resource>
+        <directory>src/main/java</directory>
+        <!--配置添加xml,mybatis的xml需要打包-->
+        <includes>
+            <include>**/*.xml</include>
+        </includes>
+    </resource>
+    <resource>
+        <directory>src/main/resources</directory>
+        <!--配置添加resource资源文件下所有文件-->
+        <includes>
+            <include>**/*.*</include>
+        </includes>
+    </resource>
+</resources>
+```
+
+
+
+### 出现mapper文件namespace重复问题
+
+使用`qm-data`时，`namespace`将不在是根据包路径进行扫描，而是通过自定义的方式进行规定，请合理规范化该属性，避免出现重复问题出现，后续会对这一块进行整体优化。
