@@ -13,7 +13,10 @@ import java.util.regex.Pattern;
  */
 public final class QmDataStyleTools {
 
-    private QmDataStyleTools(){};
+    private QmDataStyleTools() {
+    }
+
+    ;
 
     /**
      * 正则-识别大写
@@ -50,6 +53,7 @@ public final class QmDataStyleTools {
 
     /**
      * 是否为包装数据类型
+     *
      * @param clazz class
      * @return
      */
@@ -89,12 +93,29 @@ public final class QmDataStyleTools {
     }
 
     /**
+     * 首字母转小写
+     *
+     * @param s
+     * @return
+     */
+    private static String toLowerCaseFirstOne(String s) {
+        if (!Character.isLowerCase(s.charAt(0))) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(Character.toLowerCase(s.charAt(0)));
+            sb.append(s.substring(1));
+            s = sb.toString();
+        }
+        return s;
+    }
+
+    /**
      * 转换风格 下划线转驼峰
      *
      * @param fieldName 属性名称
      * @return
      */
     public final static String transformNameByHump(String fieldName) {
+        fieldName = toLowerCaseFirstOne(fieldName);
         Pattern pattern = Pattern.compile(PATTERN_2);
         Matcher matcher = pattern.matcher(fieldName);
         StringBuffer sb = new StringBuffer();
