@@ -15,6 +15,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OrderBy {
 
+    /**
+     * sql value
+     * @return
+     */
     String value() default "";
 
 }
