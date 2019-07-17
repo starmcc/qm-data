@@ -1,10 +1,7 @@
 package com.starmcc.qmdata.base;
 
 import com.starmcc.qmdata.exception.QmDataDtoException;
-import com.starmcc.qmdata.note.Id;
-import com.starmcc.qmdata.note.Param;
-import com.starmcc.qmdata.note.Style;
-import com.starmcc.qmdata.note.Table;
+import com.starmcc.qmdata.note.*;
 import com.starmcc.qmdata.util.QmDataStyleTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,40 +14,63 @@ import java.util.*;
  * @date 2018年11月24日 上午2:31:35
  * @Description 数据持久层封装DTO
  */
-public final class QmDataDto {
+public final class QmDataDto<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(QmDataDto.class);
 
-    private final Object bean;
-
+    private T bean;
+    private boolean isPrimaryKey;
+    private Style style;
     private String tableName;
-
-    private Table table;
-
+    private String orderByValue;
+    private Map<String, Object> primaryKey = null;
     private List<Map<String, Object>> params = null;
 
-    private Map<String, Object> primaryKey = null;
+    private QmDataDto() {
+    }
 
     /**
      * 构造一个Dto
      *
      * @param bean
      */
-    protected  <T> QmDataDto(T bean, boolean isPrimaryKey) {
+    protected QmDataDto(T bean, boolean isPrimaryKey) {
         this.bean = bean;
-        final Class<?> clamm = bean.getClass();
-        // 获取该实体的表名
-        table = clamm.getAnnotation(Table.class);
-        if (table == null || table.name() == null || "".equals(table.name())) {
-            tableName = clamm.getSimpleName();
-            if (table != null && table.style() == Style.UNDERLINE) {
-                tableName = QmDataStyleTools.transformNameByUnderline(tableName);
-            }
+        this.isPrimaryKey = isPrimaryKey;
+        Table table = this.bean.getClass().getAnnotation(Table.class);
+        OrderBy orderBy = this.bean.getClass().getAnnotation(OrderBy.class);
+        // 获取实体类风格
+        if (table.style() == null) {
+            this.style = Style.UNDERLINE;
         } else {
-            tableName = table.name();
+            this.style = table.style();
         }
+        // 获取该实体的表名
+        if (table != null && table.name() != null && !"".equals(table.name())) {
+            this.tableName = table.name();
+        } else {
+            this.tableName = bean.getClass().getSimpleName();
+            if (table.style() != null && style == Style.UNDERLINE) {
+                this.tableName = QmDataStyleTools.transformNameByUnderline(this.tableName);
+            }
+        }
+        // 获取orderby SQL语句
+        if (orderBy == null || orderBy.value() == null || "".equals(orderBy.value())) {
+            this.orderByValue = null;
+        } else {
+            this.orderByValue = orderBy.value();
+        }
+    }
+
+    /**
+     * 获取实体类参数封装Map
+     *
+     * @return
+     */
+    protected LinkedHashMap<String, Object> getParamsMap() {
+        LinkedHashMap<String, Object> resMap = new LinkedHashMap<>();
         // 获取该实体的字段进行操作
-        final Field[] fields = clamm.getDeclaredFields();
+        final Field[] fields = this.bean.getClass().getDeclaredFields();
         // 如果该字段为空则返回
         if (fields == null) {
             throw new QmDataDtoException("检测不到该实体的字段集!");
@@ -62,7 +82,7 @@ public final class QmDataDto {
                 field.setAccessible(true);
             }
             // 判断是否需要主键策略
-            if (isPrimaryKey && primaryKey == null) {
+            if (isPrimaryKey && this.primaryKey == null) {
                 // 序列化该主键
                 if (setPrimaryKey(field)) {
                     continue;
@@ -71,7 +91,14 @@ public final class QmDataDto {
             // 序列化该字段
             setFiledToList(field);
         }
-        return;
+        resMap.put("primaryKey", this.primaryKey);
+        resMap.put("params", this.params);
+        resMap.put("tableName", this.tableName);
+        if (this.orderByValue != null) {
+            resMap.put("orderBy", this.orderByValue);
+        }
+        LOG.debug("注入MyBatis数据：" + resMap.toString());
+        return resMap;
     }
 
     /**
@@ -94,18 +121,18 @@ public final class QmDataDto {
         if (obj != null) {
             // 不等于null
             // 判断是否设置别名
-            primaryKey = new HashMap<>(16);
+            this.primaryKey = new HashMap<>(16);
             if (idKey.name() == null || "".equals(idKey.name())) {
                 String key = filed.getName();
-                if (table != null && table.style() == Style.UNDERLINE) {
-                    primaryKey.put("key", QmDataStyleTools.transformNameByUnderline(key));
+                if (this.style == Style.UNDERLINE) {
+                    this.primaryKey.put("key", QmDataStyleTools.transformNameByUnderline(key));
                 } else {
-                    primaryKey.put("key", key);
+                    this.primaryKey.put("key", key);
                 }
             } else {
-                primaryKey.put("key", idKey.name());
+                this.primaryKey.put("key", idKey.name());
             }
-            primaryKey.put("value", obj);
+            this.primaryKey.put("value", obj);
         }
         return true;
     }
@@ -136,7 +163,7 @@ public final class QmDataDto {
         // 开始获取字段并加入字段列表
         Map<String, Object> fieldMap = new HashMap<String, Object>(16);
         if (param == null || param.name() == null || "".equals(param.name())) {
-            if (table != null && table.style() == Style.UNDERLINE) {
+            if (this.style == Style.UNDERLINE) {
                 fieldMap.put("key", QmDataStyleTools.transformNameByUnderline(field.getName()));
             } else {
                 fieldMap.put("key", field.getName());
@@ -145,26 +172,12 @@ public final class QmDataDto {
             fieldMap.put("key", param.name());
         }
         fieldMap.put("value", obj);
-        if (params == null) {
-            params = new ArrayList<>();
+        if (this.params == null) {
+            this.params = new ArrayList<>();
         }
-        params.add(fieldMap);
+        this.params.add(fieldMap);
         return;
     }
 
-
-    /**
-     * 获取实体类参数封装Map
-     *
-     * @return
-     */
-    protected LinkedHashMap<String, Object> getParamsMap() {
-        LinkedHashMap<String, Object> resMap = new LinkedHashMap<>();
-        resMap.put("primaryKey", primaryKey);
-        resMap.put("params", params);
-        resMap.put("tableName", tableName);
-        LOG.debug("注入MyBatis数据：" + resMap.toString());
-        return resMap;
-    }
 
 }

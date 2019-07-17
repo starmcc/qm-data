@@ -4,14 +4,13 @@ import com.starmcc.qmdata.common.QmData;
 import com.starmcc.qmdata.exception.QmDataException;
 import com.starmcc.qmdata.note.Style;
 import com.starmcc.qmdata.note.Table;
-import com.starmcc.qmdata.util.ConvertUtil;
+import com.starmcc.qmdata.util.QmConvertUtil;
 import com.starmcc.qmdata.util.QmDataStyleTools;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -133,10 +132,10 @@ public abstract class AbstractQmDataBase implements QmData {
     public <Q> List<Q> autoSelectList(Q entity, Class<Q> clamm) {
         long time = System.currentTimeMillis();
         SqlSession session = sqlSessionFactory.openSession();
-        List<Map<String, Object>> mapLis;
+        List<Map> mapLis;
         try {
-            if (entity == null) {entity = clamm.newInstance();}
-            mapLis = session.selectList(QM_NAMESPACE + "selectAuto", new QmDataDto(entity, false).getParamsMap());
+            mapLis = session.selectList(QM_NAMESPACE + "selectAuto",
+                    new QmDataDto<Q>(entity == null ? clamm.newInstance() : entity, false).getParamsMap());
             session.commit();
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("autoSelectList"), e);
@@ -157,7 +156,7 @@ public abstract class AbstractQmDataBase implements QmData {
                 mapLis.set(i, map);
             }
         }
-        List<Q> list = ConvertUtil.mapsToObjects(mapLis, clamm);
+        List<Q> list = QmConvertUtil.mapsToBeans(mapLis, clamm);
         LOG.debug("autoSelectList elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
         return list;
     }
@@ -168,8 +167,8 @@ public abstract class AbstractQmDataBase implements QmData {
         SqlSession session = sqlSessionFactory.openSession();
         Map<String, Object> map;
         try {
-            if (entity == null) {entity = clamm.newInstance();}
-            map = session.selectOne(QM_NAMESPACE + "selectAutoOne", new QmDataDto(entity, false).getParamsMap());
+            map = session.selectOne(QM_NAMESPACE + "selectAutoOne",
+                    new QmDataDto<Q>(entity == null ? clamm.newInstance() : entity, false).getParamsMap());
             session.commit();
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("autoSelectOne"), e);
@@ -186,7 +185,7 @@ public abstract class AbstractQmDataBase implements QmData {
         if (table != null && table.style() == Style.UNDERLINE) {
             map = QmDataStyleTools.transformMapForHump(map);
         }
-        entity = ConvertUtil.mapToBean(map, entity);
+        entity = QmConvertUtil.mapToBean(map, clamm);
         LOG.debug("autoSelectOne elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
         return entity;
     }
@@ -194,10 +193,13 @@ public abstract class AbstractQmDataBase implements QmData {
     @Override
     public <Q> int autoInsert(Q entity) {
         long time = System.currentTimeMillis();
-        if (entity == null) {return -1;}
+        if (entity == null) {
+            return -1;
+        }
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            int result = session.insert(QM_NAMESPACE + "insertAuto", new QmDataDto(entity, true).getParamsMap());
+            int result = session.insert(QM_NAMESPACE + "insertAuto",
+                    new QmDataDto<Q>(entity, true).getParamsMap());
             session.commit();
             LOG.debug("autoInsert elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
@@ -211,10 +213,13 @@ public abstract class AbstractQmDataBase implements QmData {
     @Override
     public <Q> int autoUpdate(Q entity) {
         long time = System.currentTimeMillis();
-        if (entity == null) {return -1;}
+        if (entity == null) {
+            return -1;
+        }
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            int result = session.update(QM_NAMESPACE + "updateAuto", new QmDataDto(entity, true).getParamsMap());
+            int result = session.update(QM_NAMESPACE + "updateAuto",
+                    new QmDataDto<Q>(entity, true).getParamsMap());
             session.commit();
             LOG.debug("autoUpdate elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
@@ -229,10 +234,13 @@ public abstract class AbstractQmDataBase implements QmData {
     @Override
     public <Q> int autoDelete(Q entity) {
         long time = System.currentTimeMillis();
-        if (entity == null) {return -1;}
+        if (entity == null) {
+            return -1;
+        }
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            int result = session.delete(QM_NAMESPACE + "deleteAuto", new QmDataDto(entity, true).getParamsMap());
+            int result = session.delete(QM_NAMESPACE + "deleteAuto",
+                    new QmDataDto<Q>(entity, true).getParamsMap());
             session.commit();
             LOG.debug("autoDelete elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
@@ -246,10 +254,13 @@ public abstract class AbstractQmDataBase implements QmData {
     @Override
     public <Q> int autoSelectCount(Q entity) {
         long time = System.currentTimeMillis();
-        if (entity == null) {return -1;}
+        if (entity == null) {
+            return -1;
+        }
         SqlSession session = sqlSessionFactory.openSession();
         try {
-            int result = session.selectOne(QM_NAMESPACE + "selectCount", new QmDataDto(entity, false).getParamsMap());
+            int result = session.selectOne(QM_NAMESPACE + "selectCount",
+                    new QmDataDto<Q>(entity, false).getParamsMap());
             session.commit();
             LOG.debug("autoSelectCount elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
