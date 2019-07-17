@@ -6,7 +6,7 @@
     <name>qm-data</name>
     <groupId>com.starmcc</groupId>
     <artifactId>qm-data</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <url>https://github.com/starmcc/qm-data</url>
     <description>qm-data</description>
 
@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis.version>3.4.6</mybatis.version>
         <cglib.version>2.2.2</cglib.version>
-        <google-collections.version>1.0</google-collections.version>
+        <google.guava.version>28.0-jre</google.guava.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
     </properties>
     <!-- oss上传maven配置 -->
@@ -138,9 +138,10 @@
         </dependency>
         <!-- 谷歌工具支持 -->
         <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
-            <version>${google-collections.version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${google.guava.version}</version>
+            <optional>true</optional>
             <scope>compile</scope>
         </dependency>
         <dependency>
