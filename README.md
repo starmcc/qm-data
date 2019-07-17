@@ -33,17 +33,19 @@
 > 可在中央仓库查询：https://search.maven.org/
 
 ```xml
-<dependency>
-    <groupId>org.mybatis.spring.boot</groupId>
-    <artifactId>mybatis-spring-boot-starter</artifactId>
-    <version>x.x.x</version>
-</dependency>
-<!-- 下方为依赖库引入 -->
-<dependency>
-  <groupId>com.starmcc</groupId>
-  <artifactId>qm-data</artifactId>
-  <version>1.1.0</version>
-</dependency>
+<dependencies>
+    <dependency>
+        <groupId>org.mybatis.spring.boot</groupId>
+        <artifactId>mybatis-spring-boot-starter</artifactId>
+        <version>x.x.x</version>
+    </dependency>
+    <!-- 下方为依赖库引入 -->
+    <dependency>
+      <groupId>com.starmcc</groupId>
+      <artifactId>qm-data</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+</dependencies>
 ```
 
 > **(3)** 基于`SpringBoot` 获取 `Mybatis-SqlSessionFactory`，创建专属`QmData`的`configuration`配置文件
@@ -70,10 +72,11 @@ mybatis:
   # 指定实体类包路径
   type-aliases-package: com.xx.xx.xx.entity
   # 指定QmData基础Maapper路径
+  # 框架内部的Mapper文件存放路径：classpath:com/starmcc/qmdata/mapper/*.xml
   # 建议使用classpath*:**/*Mapper.xml
   # 可扫描整个项目中带有Mapper.xml结尾的文件
   mapper-locations: 
-   - 'classpath:com/starmcc/qmdata/mapper/*.xml'
+   - 'classpath*:**/*Mapper.xml'
   configuration:
    #是否启动数据库下划线自动映射实体
    map-underscore-to-camel-case: true
@@ -82,8 +85,6 @@ mybatis:
 ```
 
 **注意mapper-locations需要扫描上述指定的路径**
-
-
 
 ## 进入开发流程
 
@@ -149,7 +150,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 >
 > 如果不按照格式，则直接抛出异常。
 
-```java
+```
 namespace="调用模块-调用类名-编号-Mapper"  //大驼峰 + 规范化
 ```
 
@@ -214,7 +215,7 @@ public class User {
 }
 ```
 
-> 框架目前只提供3个注解，下面有详细的注解说明，自动SQL是通过实体类的注解进行SQL封装。
+> 框架目前只提供几个基础注解，下面有详细的注解说明，自动SQL是通过实体类的注解进行SQL封装。
 
 ### *Step.4*
 
@@ -230,7 +231,7 @@ public class User {
 
 ### @Table
 
-> 注明该实体类对应数据库的表名，使用`QmData`的`auto`系列必须注明该注解。一共有两个参数，`name`/`style`，如果不提供任何参数，则默认以类名作为表名。
+> 注明该实体类对应数据库的表名，标注在class上。使用`QmData`的`auto`系列必须注明该注解。一共有两个参数，`name`/`style`，如果不提供任何参数，则默认以类名作为表名。
 
 #### 设置表名
 
@@ -254,7 +255,7 @@ public class User {
 
 * 属性(`name`)
 
-  > 当类中主键属性名与数据库的主键字段名不一致时，使用`name`属性可改变`QmData`识别的主键字段名，默认为使用当前属性名作为主键。
+      > 当类中主键属性名与数据库的主键字段名不一致时，使用`name`属性可改变`QmData`识别的主键字段名，默认为使用当前属性名作为主键。
 
 ---
 
@@ -273,4 +274,54 @@ public class User {
 
 * 属性(`except`)
 
-  > 如果在实体类中需要排除某些字段不进行操作，则给`except`设置为`true`即可。默认为`flase`。
+      > 如果在实体类中需要排除某些字段不进行操作，则给`except`设置为`true`即可。默认为`flase`。
+
+### @OrderBy
+
+> 从 1.1.0 版本支持自动SQL的排序，注明该实体类使用ORDER BY排序，标注在class上。
+
+#### 设置排序SQL
+
+* 属性(`value`)
+
+	> ORDER BY 字段跟随后面的字符串。
+
+**示例：**
+进行一次`student`表中的学号排序，字段如下：
+
+> `student` 表
+
+|  id  |  name  | st_number |
+| :--: | :----: | :-------: |
+|  1   |  浅梦  |     3     |
+|  2   |  唐昊  |     5     |
+|  3   | 宁风致 |     2     |
+
+
+
+> 实体类标注`@OrderBy("st_number DESC")`
+
+```java
+@Table(name = "student")
+@OrderBy("st_number DESC")
+public class Student {
+    
+    @Id
+    private Integer id;
+    private String name;
+    private Integer studentNumber;
+    
+    // getting setting 省略 ...
+}
+```
+
+> 返回结果
+
+
+|  id  |  name  | st_number |
+| :--: | :----: | :-------: |
+|  2   |  唐昊  |     5     |
+|  1   |  浅梦  |     3     |
+|  3   | 宁风致 |     2     |
+
+上述示例等同于在自动化SQL当中加入了这一条语句： `ORDER BY st_number DESC`
