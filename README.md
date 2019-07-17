@@ -284,7 +284,7 @@ public class User {
 
 * 属性(`value`)
 
-	> ORDER BY 字段跟随后面的字符串。
+	> 它的值为`ORDER BY`关键字后面跟随的字符串。
 
 **示例：**
 进行一次`student`表中的学号排序，字段如下：
@@ -309,7 +309,7 @@ public class Student {
     @Id
     private Integer id;
     private String name;
-    private Integer studentNumber;
+    private Integer stNumber;
     
     // getting setting 省略 ...
 }
