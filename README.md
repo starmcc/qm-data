@@ -278,7 +278,7 @@ public class User {
 
 ### @OrderBy
 
-> 从 1.1.0 版本支持自动SQL的排序，注明该实体类使用ORDER BY排序，标注在class上。
+> 从 1.1.0 版本支持自动SQL的排序，注明该实体类使用`ORDER BY`排序，标注在`class`上。
 
 #### 设置排序SQL
 
