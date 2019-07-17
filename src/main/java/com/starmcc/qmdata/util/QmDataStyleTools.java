@@ -82,6 +82,7 @@ public final class QmDataStyleTools {
      * @return
      */
     public final static String transformNameByUnderline(String fieldName) {
+        fieldName = toLowerCaseFirstOne(fieldName);
         Pattern pattern = Pattern.compile(PATTERN_1);
         Matcher matcher = pattern.matcher(fieldName);
         StringBuffer sb = new StringBuffer();
@@ -115,7 +116,6 @@ public final class QmDataStyleTools {
      * @return
      */
     public final static String transformNameByHump(String fieldName) {
-        fieldName = toLowerCaseFirstOne(fieldName);
         Pattern pattern = Pattern.compile(PATTERN_2);
         Matcher matcher = pattern.matcher(fieldName);
         StringBuffer sb = new StringBuffer();
