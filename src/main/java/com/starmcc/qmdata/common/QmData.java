@@ -103,7 +103,8 @@ public interface QmData {
      * 通用查询记录数
      *
      * @param entity 实体类(必须带有@Table和@Id)
+     * @param clamm  实体类class对象
      * @return 影响行数
      */
-    <Q> int autoSelectCount(Q entity);
+    <Q> int autoSelectCount(Q entity, Class<Q> clamm);
 }

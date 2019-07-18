@@ -134,8 +134,11 @@ public abstract class AbstractQmDataBase implements QmData {
         SqlSession session = sqlSessionFactory.openSession();
         List<Map> mapLis;
         try {
+            if (entity == null) {
+                entity = clamm.newInstance();
+            }
             mapLis = session.selectList(QM_NAMESPACE + "selectAuto",
-                    new QmDataDto<Q>(entity == null ? clamm.newInstance() : entity, false).getParamsMap());
+                    new QmDataDto<Q>(entity, false).getParamsMap());
             session.commit();
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("autoSelectList"), e);
@@ -167,8 +170,11 @@ public abstract class AbstractQmDataBase implements QmData {
         SqlSession session = sqlSessionFactory.openSession();
         Map<String, Object> map;
         try {
+            if (entity == null) {
+                entity = clamm.newInstance();
+            }
             map = session.selectOne(QM_NAMESPACE + "selectAutoOne",
-                    new QmDataDto<Q>(entity == null ? clamm.newInstance() : entity, false).getParamsMap());
+                    new QmDataDto<Q>(entity, false).getParamsMap());
             session.commit();
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("autoSelectOne"), e);
@@ -252,13 +258,13 @@ public abstract class AbstractQmDataBase implements QmData {
     }
 
     @Override
-    public <Q> int autoSelectCount(Q entity) {
+    public <Q> int autoSelectCount(Q entity, Class<Q> clamm) {
         long time = System.currentTimeMillis();
-        if (entity == null) {
-            return -1;
-        }
         SqlSession session = sqlSessionFactory.openSession();
         try {
+            if (entity == null) {
+                entity = clamm.newInstance();
+            }
             int result = session.selectOne(QM_NAMESPACE + "selectCount",
                     new QmDataDto<Q>(entity, false).getParamsMap());
             session.commit();
