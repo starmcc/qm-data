@@ -15,7 +15,7 @@ public interface QmData {
      * @param params  参数
      * @return 根据返回指定的类型进行嵌套数据
      */
-    <M> List<M> selectList(String sqlName, Object params);
+    <Q> List<Q> selectList(String sqlName, Object params);
 
     /**
      * 查询单条记录
@@ -24,7 +24,7 @@ public interface QmData {
      * @param params  参数
      * @return 根据返回指定的类型进行嵌套数据
      */
-    <M> M selectOne(String sqlName, Object params);
+    <Q> Q selectOne(String sqlName, Object params);
 
 
     /**

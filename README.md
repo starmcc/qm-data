@@ -1,4 +1,4 @@
-# Qm Data 1.1.0
+# Qm Data 1.1.1
 
 ## 描述
 
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.starmcc</groupId>
       <artifactId>qm-data</artifactId>
-      <version>1.1.0</version>
+      <version>1.1.1</version>
     </dependency>
 </dependencies>
 ```
@@ -221,6 +221,111 @@ public class User {
 
 > 编写控制器接口，访问测试成功获取数据。
 
+
+
+## 接口说明
+
+```java
+/**
+* 查询列表
+*
+* @param sqlName 命名空间
+* @param params  参数
+* @return 根据返回指定的类型进行嵌套数据
+*/
+<Q> List<Q> selectList(String sqlName, Object params);
+
+/**
+* 查询单条记录
+*
+* @param sqlName 命名空间
+* @param params  参数
+* @return 根据返回指定的类型进行嵌套数据
+*/
+<Q> Q selectOne(String sqlName, Object params);
+
+
+/**
+* 插入记录
+*
+* @param sqlName 命名空间
+* @param params  参数
+* @return 影响行数
+*/
+int insert(String sqlName, Object params);
+
+/**
+* 修改记录
+*
+* @param sqlName 命名空间
+* @param params  参数
+* @return 影响行数
+*/
+int update(String sqlName, Object params);
+
+/**
+* 删除记录
+*
+* @param sqlName 命名空间
+* @param params  参数
+* @return 影响行数
+*/
+int delete(String sqlName, Object params);
+
+
+/**
+* 通用查询列表
+*
+* @param entity 实体类(必须带有@Table)
+* @param clamm  实体类class对象
+* @return 根据参数指定的类型进行嵌套数据
+*/
+<Q> List<Q> autoSelectList(Q entity, Class<Q> clamm);
+
+
+/**
+* 通用查询单条记录
+*
+* @param entity 实体类(必须带有@Table)
+* @param clamm  实体类class对象
+* @return 根据参数指定的类型进行嵌套数据
+*/
+<Q> Q autoSelectOne(Q entity, Class<Q> clamm);
+
+
+/**
+* 通用插入记录
+*
+* @param entity 实体类(必须带有@Table和@Id)
+* @return 影响行数
+*/
+<Q> int autoInsert(Q entity);
+
+/**
+* 通用修改记录
+*
+* @param entity 实体类(必须带有@Table和@Id)
+* @return 影响行数
+*/
+<Q> int autoUpdate(Q entity);
+
+/**
+* 通用删除记录
+*
+* @param entity 实体类(必须带有@Table和@Id)
+* @return 影响行数
+*/
+<Q> int autoDelete(Q entity);
+
+/**
+* 通用查询记录数
+*
+* @param entity 实体类(必须带有@Table和@Id)
+* @param clamm  实体类class对象
+* @return 影响行数
+*/
+<Q> int autoSelectCount(Q entity, Class<Q> clamm);
+```
 
 
 ## 实体类注解说明
