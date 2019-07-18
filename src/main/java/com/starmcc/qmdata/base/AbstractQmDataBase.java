@@ -55,7 +55,7 @@ public abstract class AbstractQmDataBase implements QmData {
         try {
             List<M> list = session.selectList(getSqlName(sqlName), params);
             session.commit();
-            LOG.debug("selectList elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("selectList elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return list;
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("selectList"), e);
@@ -71,7 +71,7 @@ public abstract class AbstractQmDataBase implements QmData {
         try {
             M obj = session.selectOne(getSqlName(sqlName), params);
             session.commit();
-            LOG.debug("selectOne elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("selectOne elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return obj;
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("selectOne"), e);
@@ -87,7 +87,7 @@ public abstract class AbstractQmDataBase implements QmData {
         try {
             int result = session.insert(getSqlName(sqlName), params);
             session.commit();
-            LOG.debug("insert elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("insert elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("insert"), e);
@@ -103,7 +103,7 @@ public abstract class AbstractQmDataBase implements QmData {
         try {
             int result = session.update(getSqlName(sqlName), params);
             session.commit();
-            LOG.debug("update elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("update elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("update"), e);
@@ -119,7 +119,7 @@ public abstract class AbstractQmDataBase implements QmData {
         try {
             int result = session.delete(getSqlName(sqlName), params);
             session.commit();
-            LOG.debug("delete elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("delete elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("delete"), e);
@@ -147,7 +147,7 @@ public abstract class AbstractQmDataBase implements QmData {
         }
         // 如果是空的直接返回null
         if (mapLis == null) {
-            LOG.debug("autoSelectList elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("autoSelectList elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return null;
         }
         // 如果数据库字段是下划线样式 则进行转换
@@ -160,7 +160,7 @@ public abstract class AbstractQmDataBase implements QmData {
             }
         }
         List<Q> list = QmConvertUtil.mapsToBeans(mapLis, clamm);
-        LOG.debug("autoSelectList elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+        LOG.info("autoSelectList elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
         return list;
     }
 
@@ -183,7 +183,7 @@ public abstract class AbstractQmDataBase implements QmData {
         }
         // 如果是空的直接返回null
         if (map == null) {
-            LOG.debug("autoSelectOne elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("autoSelectOne elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return null;
         }
         // 如果数据库字段是下划线样式 则进行转换
@@ -192,7 +192,7 @@ public abstract class AbstractQmDataBase implements QmData {
             map = QmDataStyleTools.transformMapForHump(map);
         }
         entity = QmConvertUtil.mapToBean(map, clamm);
-        LOG.debug("autoSelectOne elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+        LOG.info("autoSelectOne elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
         return entity;
     }
 
@@ -207,7 +207,7 @@ public abstract class AbstractQmDataBase implements QmData {
             int result = session.insert(QM_NAMESPACE + "insertAuto",
                     new QmDataDto<Q>(entity, true).getParamsMap());
             session.commit();
-            LOG.debug("autoInsert elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("autoInsert elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("autoInsert"), e);
@@ -227,7 +227,7 @@ public abstract class AbstractQmDataBase implements QmData {
             int result = session.update(QM_NAMESPACE + "updateAuto",
                     new QmDataDto<Q>(entity, true).getParamsMap());
             session.commit();
-            LOG.debug("autoUpdate elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("autoUpdate elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("autoUpdate"), e);
@@ -248,7 +248,7 @@ public abstract class AbstractQmDataBase implements QmData {
             int result = session.delete(QM_NAMESPACE + "deleteAuto",
                     new QmDataDto<Q>(entity, true).getParamsMap());
             session.commit();
-            LOG.debug("autoDelete elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("autoDelete elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("autoDelete"), e);
@@ -268,7 +268,7 @@ public abstract class AbstractQmDataBase implements QmData {
             int result = session.selectOne(QM_NAMESPACE + "selectCount",
                     new QmDataDto<Q>(entity, false).getParamsMap());
             session.commit();
-            LOG.debug("autoSelectCount elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
+            LOG.info("autoSelectCount elapsed time:" + (System.currentTimeMillis() - time) + "/ms");
             return result;
         } catch (Exception e) {
             throw new QmDataException(getErrorMsg("autoSelectCount"), e);
