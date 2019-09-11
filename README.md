@@ -1,4 +1,4 @@
-# Qm Data 1.2.0-RELEASE
+# Qm Data 1.1.1-RELEASE
 
 ## 描述
 
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>com.starmcc</groupId>
       <artifactId>qm-data</artifactId>
-      <version>1.2.0-RELEASE</version>
+      <version>1.1.1-RELEASE</version>
     </dependency>
 </dependencies>
 ```
