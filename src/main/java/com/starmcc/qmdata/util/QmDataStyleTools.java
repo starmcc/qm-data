@@ -42,7 +42,9 @@ public final class QmDataStyleTools {
             String key = (String) entry.getKey();
             Object val = entry.getValue();
             key = transformNameByHump(key);
-            if (!val.getClass().isPrimitive() && !isPackDataTypes(val.getClass())) {
+            if (val != null
+                    && !val.getClass().isPrimitive()
+                    && !isPackDataTypes(val.getClass())) {
                 Map mapTemp = (Map) val;
                 val = transformMapForHump(mapTemp);
             }
