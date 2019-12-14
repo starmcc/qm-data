@@ -34,10 +34,7 @@
 
 ### 1.5 Help Document
 
-|    Version    |                Document Help                 |
-| :-----------: | :------------------------------------------: |
-| 2.0.0-RELEASE | [Reference Doc.](https://www.starmcc.com/qm-data/200/基础配置.html) |
-| 1.1.1-RELEASE | [Reference Doc.](https://www.starmcc.com/qm-data/111/基础配置.html) |
+[**Show Help Document**](https://www.starmcc.com/qm-data/)
 
 ### 1.6 Update Version Log
 
