@@ -14,8 +14,8 @@ public interface QmData {
     /**
      * 通用查询列表
      *
-     * @param entity 实体类(必须带有@Table)
-     * @param clamm  实体类class对象
+     * @param entity 对应表的实体类(必须带有@Table)
+     * @param clamm  对应表的实体类的Class
      * @return 根据参数指定的类型进行嵌套数据
      */
     <Q> List<Q> autoSelectList(Q entity, Class<Q> clamm);
@@ -34,15 +34,15 @@ public interface QmData {
     /**
      * 通用插入记录
      *
-     * @param entity 实体类(必须带有@Table和@Id)
+     * @param entity 对应表的实体类(必须带有@Table和@Id)
      * @return 影响行数
      */
     <Q> int autoInsert(Q entity);
 
     /**
-     * 通用插入记录
+     * 通用插入记录 （返回主键）
      *
-     * @param entity 实体类(必须带有@Table和@Id)
+     * @param entity 对应表的实体类(必须带有@Table和@Id)
      * @return ResultInsert 返回带新增主键id的对象
      */
     <Q> ResultInsert autoInsertGetPrimaryKey(Q entity);
@@ -50,7 +50,7 @@ public interface QmData {
     /**
      * 通用修改记录
      *
-     * @param entity 实体类(必须带有@Table和@Id)
+     * @param entity 对应表的实体类(必须带有@Table和@Id)
      * @return 影响行数
      */
     <Q> int autoUpdate(Q entity);
@@ -58,7 +58,7 @@ public interface QmData {
     /**
      * 通用删除记录
      *
-     * @param entity 实体类(必须带有@Table和@Id)
+     * @param entity 对应表的实体类(必须带有@Table)
      * @return 影响行数
      */
     <Q> int autoDelete(Q entity);
@@ -66,7 +66,7 @@ public interface QmData {
     /**
      * 通用查询记录数
      *
-     * @param entity 实体类(必须带有@Table和@Id)
+     * @param entity 对应表的实体类(必须带有@Table)
      * @return 影响行数
      */
     <Q> int autoSelectCount(Q entity);

@@ -96,7 +96,8 @@
     <!-- 通用删除数据入口 -->
     <delete id="delete">
         DELETE FROM `${tableName}`
-        WHERE `${primaryKey.key}` = #{primaryKey.value}
+        WHERE
+        <if test="primaryKey != null">`${primaryKey.key}` = #{primaryKey.value} </if>
         <if test="params != null and params.size != 0">
             <foreach open="AND" item="item" collection="params" separator="AND">
                 `${item.key}` = #{item.value}
