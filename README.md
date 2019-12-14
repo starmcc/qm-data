@@ -36,12 +36,12 @@
 
 |    Version    |                Document Help                 |
 | :-----------: | :------------------------------------------: |
-|  2.0.0-BETA   | [Reference Doc.](/qm-data/200/基础配置.html) |
-| 1.1.1-RELEASE | [Reference Doc.](/qm-data/111/基础配置.html) |
+|  2.0.0-BETA   | [Reference Doc.](https://www.starmcc.com/qm-data/200/基础配置.html) |
+| 1.1.1-RELEASE | [Reference Doc.](https://www.starmcc.com/qm-data/111/基础配置.html) |
 
 ### 1.6 Update Version Log
 
-[**Show Version**](/qm-data/UpdateLog.html)
+[**Show Version**](https://www.starmcc.com/qm-data/UpdateLog.html)
 
 ### 1.7 Open Source
 
