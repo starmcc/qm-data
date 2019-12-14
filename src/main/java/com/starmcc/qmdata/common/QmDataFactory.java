@@ -1,7 +1,7 @@
 package com.starmcc.qmdata.common;
 
-import com.starmcc.qmdata.base.AbstractQmDataBase;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionTemplate;
 
 /**
  * @Author: qm
@@ -18,8 +18,8 @@ public class QmDataFactory {
      * @param sqlSessionFactory Mybatis依赖的SqlSessionFactory
      * @return
      */
-    public static QmData createInstance(SqlSessionFactory sqlSessionFactory) {
-        return new QmDataEntrance(sqlSessionFactory);
+    public static QmData createInstance(SqlSessionTemplate sqlSessionTemplate) {
+        return new QmDataEntrance(sqlSessionTemplate);
     }
 
 }

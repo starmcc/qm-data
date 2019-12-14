@@ -1,19 +1,25 @@
 package com.starmcc.qmdata.common;
 
-import com.starmcc.qmdata.base.AbstractQmDataBase;
-import org.apache.ibatis.session.SqlSessionFactory;
+import com.starmcc.qmdata.base.QmDataImplement;
+import org.mybatis.spring.SqlSessionTemplate;
 
 /**
  * @Author: qm
  * @Date: 2019/5/26 15:49
  * @Description: QmBase入口封装
  */
-public class QmDataEntrance extends AbstractQmDataBase {
+public class QmDataEntrance extends QmDataImplement {
 
-    private QmDataEntrance() {
-    }
+    /**
+     * 禁止无参实例化
+     */
+    private QmDataEntrance() {}
 
-    public QmDataEntrance(SqlSessionFactory sqlSessionFactory) {
-        super.sqlSessionFactory = sqlSessionFactory;
+    /**
+     * 初始化父类 sqlSessionFactory
+     * @param sqlSessionFactory
+     */
+    public QmDataEntrance(SqlSessionTemplate sqlSessionTemplate) {
+        super.sqlSessionTemplate = sqlSessionTemplate;
     }
 }

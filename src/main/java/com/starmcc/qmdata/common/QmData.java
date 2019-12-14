@@ -1,5 +1,7 @@
 package com.starmcc.qmdata.common;
 
+import com.starmcc.qmdata.model.ResultInsert;
+
 import java.util.List;
 
 /**
@@ -11,48 +13,48 @@ public interface QmData {
     /**
      * 查询列表
      *
-     * @param sqlName 命名空间
+     * @param nameSpace 命名空间
      * @param params  参数
      * @return 根据返回指定的类型进行嵌套数据
      */
-    <Q> List<Q> selectList(String sqlName, Object params);
+    <Q> List<Q> selectList(String nameSpace, Object params);
 
     /**
      * 查询单条记录
      *
-     * @param sqlName 命名空间
+     * @param nameSpace 命名空间
      * @param params  参数
      * @return 根据返回指定的类型进行嵌套数据
      */
-    <Q> Q selectOne(String sqlName, Object params);
+    <Q> Q selectOne(String nameSpace, Object params);
 
 
     /**
      * 插入记录
      *
-     * @param sqlName 命名空间
+     * @param nameSpace 命名空间
      * @param params  参数
      * @return 影响行数
      */
-    int insert(String sqlName, Object params);
+    int insert(String nameSpace, Object params);
 
     /**
      * 修改记录
      *
-     * @param sqlName 命名空间
+     * @param nameSpace 命名空间
      * @param params  参数
      * @return 影响行数
      */
-    int update(String sqlName, Object params);
+    int update(String nameSpace, Object params);
 
     /**
      * 删除记录
      *
-     * @param sqlName 命名空间
+     * @param nameSpace 命名空间
      * @param params  参数
      * @return 影响行数
      */
-    int delete(String sqlName, Object params);
+    int delete(String nameSpace, Object params);
 
 
     /**
@@ -84,6 +86,14 @@ public interface QmData {
     <Q> int autoInsert(Q entity);
 
     /**
+     * 通用插入记录
+     *
+     * @param entity 实体类(必须带有@Table和@Id)
+     * @return ResultInsert 返回带新增主键id的对象
+     */
+    <Q> ResultInsert autoInsertGetPrimaryKey(Q entity);
+
+    /**
      * 通用修改记录
      *
      * @param entity 实体类(必须带有@Table和@Id)
@@ -103,8 +113,7 @@ public interface QmData {
      * 通用查询记录数
      *
      * @param entity 实体类(必须带有@Table和@Id)
-     * @param clamm  实体类class对象
      * @return 影响行数
      */
-    <Q> int autoSelectCount(Q entity, Class<Q> clamm);
+    <Q> int autoSelectCount(Q entity);
 }

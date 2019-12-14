@@ -6,7 +6,7 @@
 <mapper namespace="QmBaseMapper">
 
     <!-- 通用查询数据入口 -->
-    <select id="selectAuto" resultType="map">
+    <select id="selectList" resultType="map">
         SELECT *
         FROM `${tableName}`
         WHERE 1 = 1
@@ -21,7 +21,7 @@
     </select>
 
     <!-- 通用查询单数据入口 -->
-    <select id="selectAutoOne" resultType="map">
+    <select id="selectOne" resultType="map">
         SELECT *
         FROM `${tableName}`
         WHERE 1 = 1
@@ -37,7 +37,31 @@
     </select>
 
     <!-- 通用增加数据入口 -->
-    <insert id="insertAuto">
+    <insert id="insert" parameterType="map">
+        INSERT INTO `${tableName}`
+        (
+        <if test="primaryKey != null">`${primaryKey.key}`,</if>
+        <if test="params != null and params.size != 0">
+            <foreach item="item" collection="params" separator=",">
+                `${item.key}`
+            </foreach>
+        </if>
+        )
+        VALUES(
+        <if test="primaryKey != null">#{primaryKey.value},</if>
+        <if test="params != null and params.size != 0">
+            <foreach item="item" collection="params" separator=",">
+                #{item.value}
+            </foreach>
+        </if>
+        )
+    </insert>
+
+    <!-- 通用增加数据入口 -->
+    <insert id="insertGetPrimaryKey" parameterType="map">
+        <selectKey resultType="Object" order="AFTER" keyProperty="INSERT_PRIMARY_MAP_KEY">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         INSERT INTO `${tableName}`
         (
         <if test="primaryKey != null">`${primaryKey.key}`,</if>
@@ -58,7 +82,7 @@
     </insert>
 
     <!-- 通用更新数据入口 -->
-    <update id="updateAuto">
+    <update id="update">
         UPDATE `${tableName}`
         SET
         <if test="params != null and params.size != 0">
@@ -70,7 +94,7 @@
     </update>
 
     <!-- 通用删除数据入口 -->
-    <delete id="deleteAuto">
+    <delete id="delete">
         DELETE FROM `${tableName}`
         WHERE `${primaryKey.key}` = #{primaryKey.value}
         <if test="params != null and params.size != 0">

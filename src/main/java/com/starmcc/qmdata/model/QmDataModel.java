@@ -1,4 +1,4 @@
-package com.starmcc.qmdata.base;
+package com.starmcc.qmdata.model;
 
 import com.starmcc.qmdata.exception.QmDataDtoException;
 import com.starmcc.qmdata.note.*;
@@ -6,17 +6,19 @@ import com.starmcc.qmdata.util.QmDataStyleTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 
 /**
  * @author qm
  * @date 2018年11月24日 上午2:31:35
- * @Description 数据持久层封装DTO
+ * @Description 数据持久层封装Model
  */
-public final class QmDataDto<T> {
+public final class QmDataModel<T> implements Serializable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(QmDataDto.class);
+    private static final long serialVersionUID = 6857822692226391769L;
+    private static final Logger LOG = LoggerFactory.getLogger(QmDataModel.class);
 
     private T bean;
     private boolean isPrimaryKey;
@@ -25,8 +27,13 @@ public final class QmDataDto<T> {
     private String orderByValue;
     private Map<String, Object> primaryKey = null;
     private List<Map<String, Object>> params = null;
+    private LinkedHashMap<String, Object> paramsMap = null;
 
-    private QmDataDto() {
+    private QmDataModel() {
+    }
+
+    public static <T> QmDataModel<T> getInstance(T bean, boolean isPrimaryKey) {
+        return new QmDataModel<T>(bean, isPrimaryKey);
     }
 
     /**
@@ -34,32 +41,37 @@ public final class QmDataDto<T> {
      *
      * @param bean
      */
-    protected QmDataDto(T bean, boolean isPrimaryKey) {
+    private QmDataModel(T bean, boolean isPrimaryKey) {
+        if (null == bean) {
+            return;
+        }
         this.bean = bean;
         this.isPrimaryKey = isPrimaryKey;
         Table table = this.bean.getClass().getAnnotation(Table.class);
         OrderBy orderBy = this.bean.getClass().getAnnotation(OrderBy.class);
         // 获取实体类风格
-        if (table.style() == null) {
+        if (null == table.style()) {
             this.style = Style.UNDERLINE;
         } else {
             this.style = table.style();
         }
         // 获取该实体的表名
-        if (table != null && table.name() != null && !"".equals(table.name())) {
+        if (null != table && null != table.name() && !"".equals(table.name())) {
             this.tableName = table.name();
         } else {
-            this.tableName = bean.getClass().getSimpleName();
-            if (table.style() != null && style == Style.UNDERLINE) {
+            this.tableName = this.bean.getClass().getSimpleName();
+            if (null != table.style() && style == Style.UNDERLINE) {
                 this.tableName = QmDataStyleTools.transformNameByUnderline(this.tableName);
             }
         }
         // 获取orderby SQL语句
-        if (orderBy == null || orderBy.value() == null || "".equals(orderBy.value())) {
+        if (null == orderBy || null == orderBy.value() || "".equals(orderBy.value())) {
             this.orderByValue = null;
         } else {
             this.orderByValue = orderBy.value();
         }
+        // 构建 paramsMap
+        this.buildParamsMap();
     }
 
     /**
@@ -67,12 +79,19 @@ public final class QmDataDto<T> {
      *
      * @return
      */
-    protected LinkedHashMap<String, Object> getParamsMap() {
-        LinkedHashMap<String, Object> resMap = new LinkedHashMap<>();
+    public LinkedHashMap<String, Object> getParamsMap() {
+        return paramsMap;
+    }
+
+    /**
+     * 构建 params Map
+     */
+    private void buildParamsMap() {
+        paramsMap = new LinkedHashMap<>();
         // 获取该实体的字段进行操作
         final Field[] fields = this.bean.getClass().getDeclaredFields();
         // 如果该字段为空则返回
-        if (fields == null) {
+        if (null == fields) {
             throw new QmDataDtoException("检测不到该实体的字段集!");
         }
         // 遍历字段进行参数封装
@@ -82,23 +101,22 @@ public final class QmDataDto<T> {
                 field.setAccessible(true);
             }
             // 判断是否需要主键策略
-            if (isPrimaryKey && this.primaryKey == null) {
+            if (isPrimaryKey && null == this.primaryKey) {
                 // 序列化该主键
-                if (setPrimaryKey(field)) {
+                if (this.setPrimaryKey(field)) {
                     continue;
                 }
             }
             // 序列化该字段
-            setFiledToList(field);
+            this.setFiledToList(field);
         }
-        resMap.put("primaryKey", this.primaryKey);
-        resMap.put("params", this.params);
-        resMap.put("tableName", this.tableName);
+        paramsMap.put("primaryKey", this.primaryKey);
+        paramsMap.put("params", this.params);
+        paramsMap.put("tableName", this.tableName);
         if (this.orderByValue != null) {
-            resMap.put("orderBy", this.orderByValue);
+            paramsMap.put("orderBy", this.orderByValue);
         }
-        LOG.debug("注入MyBatis数据：" + resMap.toString());
-        return resMap;
+        LOG.debug("注入MyBatis数据：" + paramsMap.toString());
     }
 
     /**
@@ -107,23 +125,23 @@ public final class QmDataDto<T> {
      * @param id
      * @return
      */
-    private boolean setPrimaryKey(Field filed) {
-        Id idKey = filed.getAnnotation(Id.class);
-        if (idKey == null) {
+    private boolean setPrimaryKey(Field field) {
+        Id idKey = field.getAnnotation(Id.class);
+        if (null == idKey) {
             return false;
         }
         Object obj = null;
         try {
-            obj = filed.get(bean);
+            obj = field.get(bean);
         } catch (IllegalAccessException e) {
-            throw new QmDataDtoException("读取实体类主键字段发生了异常！");
+            throw new QmDataDtoException("读取实体类主键字段发生了异常！", e);
         }
-        if (obj != null) {
+        if (null != obj) {
             // 不等于null
             // 判断是否设置别名
             this.primaryKey = new HashMap<>(16);
-            if (idKey.name() == null || "".equals(idKey.name())) {
-                String key = filed.getName();
+            if (null == idKey.name() || "".equals(idKey.name())) {
+                String key = field.getName();
                 if (this.style == Style.UNDERLINE) {
                     this.primaryKey.put("key", QmDataStyleTools.transformNameByUnderline(key));
                 } else {
@@ -147,14 +165,14 @@ public final class QmDataDto<T> {
     private void setFiledToList(Field field) {
         Param param = field.getAnnotation(Param.class);
         // 判断是否有该注解，如果存在并且except等于true则不加入该字段。
-        if (param != null && param.except()) {
+        if (null != param && param.except()) {
             return;
         }
         Object obj = null;
         try {
             obj = field.get(bean);
             // 如果值是null则不需要这个值了。
-            if (obj == null) {
+            if (null == obj) {
                 return;
             }
         } catch (IllegalAccessException e) {
@@ -162,7 +180,7 @@ public final class QmDataDto<T> {
         }
         // 开始获取字段并加入字段列表
         Map<String, Object> fieldMap = new HashMap<String, Object>(16);
-        if (param == null || param.name() == null || "".equals(param.name())) {
+        if (null == param || null == param.name() || "".equals(param.name())) {
             if (this.style == Style.UNDERLINE) {
                 fieldMap.put("key", QmDataStyleTools.transformNameByUnderline(field.getName()));
             } else {
@@ -172,7 +190,7 @@ public final class QmDataDto<T> {
             fieldMap.put("key", param.name());
         }
         fieldMap.put("value", obj);
-        if (this.params == null) {
+        if (null == this.params) {
             this.params = new ArrayList<>();
         }
         this.params.add(fieldMap);
