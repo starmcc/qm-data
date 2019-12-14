@@ -31,66 +31,6 @@ public class QmDataImplement implements QmData {
      */
     protected SqlSessionTemplate sqlSessionTemplate;
 
-    @Override
-    public <M> List<M> selectList(String nameSpace, Object params) {
-        try {
-            final long time = System.currentTimeMillis();
-            List<M> list = sqlSessionTemplate.selectList(nameSpace, params);
-            LOG.info("selectList elapsed time:{}/ms", System.currentTimeMillis() - time);
-            return list;
-        } catch (Exception e) {
-            throw new QmDataException(this.getErrMsg(), e);
-        }
-    }
-
-    @Override
-    public <M> M selectOne(String nameSpace, Object params) {
-        try {
-            final long time = System.currentTimeMillis();
-            M obj = sqlSessionTemplate.selectOne(nameSpace, params);
-            LOG.info("selectOne elapsed time:{}/ms", System.currentTimeMillis() - time);
-            return obj;
-        } catch (Exception e) {
-            throw new QmDataException(this.getErrMsg(), e);
-        }
-    }
-
-    @Override
-    public int insert(String nameSpace, Object params) {
-        try {
-            final long time = System.currentTimeMillis();
-            int result = sqlSessionTemplate.insert(nameSpace, params);
-            LOG.info("insert elapsed time:{}/ms", System.currentTimeMillis() - time);
-            return result;
-        } catch (Exception e) {
-            throw new QmDataException(this.getErrMsg(), e);
-        }
-    }
-
-    @Override
-    public int update(String nameSpace, Object params) {
-        try {
-            final long time = System.currentTimeMillis();
-            int result = sqlSessionTemplate.update(nameSpace, params);
-            LOG.info("update elapsed time:{}/ms", System.currentTimeMillis() - time);
-            return result;
-        } catch (Exception e) {
-            throw new QmDataException(this.getErrMsg(), e);
-        }
-    }
-
-    @Override
-    public int delete(String nameSpace, Object params) {
-        try {
-            final long time = System.currentTimeMillis();
-            int result = sqlSessionTemplate.delete(nameSpace, params);
-            LOG.info("delete elapsed time:{}/ms", System.currentTimeMillis() - time);
-            return result;
-        } catch (Exception e) {
-            throw new QmDataException(this.getErrMsg(), e);
-        }
-    }
-
     // =======================================华丽的分割线===========================================
 
     @Override

@@ -10,52 +10,6 @@ import java.util.List;
  * @Description Mybatis数据持久层封装工具
  */
 public interface QmData {
-    /**
-     * 查询列表
-     *
-     * @param nameSpace 命名空间
-     * @param params  参数
-     * @return 根据返回指定的类型进行嵌套数据
-     */
-    <Q> List<Q> selectList(String nameSpace, Object params);
-
-    /**
-     * 查询单条记录
-     *
-     * @param nameSpace 命名空间
-     * @param params  参数
-     * @return 根据返回指定的类型进行嵌套数据
-     */
-    <Q> Q selectOne(String nameSpace, Object params);
-
-
-    /**
-     * 插入记录
-     *
-     * @param nameSpace 命名空间
-     * @param params  参数
-     * @return 影响行数
-     */
-    int insert(String nameSpace, Object params);
-
-    /**
-     * 修改记录
-     *
-     * @param nameSpace 命名空间
-     * @param params  参数
-     * @return 影响行数
-     */
-    int update(String nameSpace, Object params);
-
-    /**
-     * 删除记录
-     *
-     * @param nameSpace 命名空间
-     * @param params  参数
-     * @return 影响行数
-     */
-    int delete(String nameSpace, Object params);
-
 
     /**
      * 通用查询列表
