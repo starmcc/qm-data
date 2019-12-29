@@ -15,7 +15,10 @@
                 AND `${item.key}` = #{item.value}
             </foreach>
         </if>
-        <if test="orderBy != null">
+        <if test="whereSql != null and whereSql != ''">
+            AND ${whereSql}
+        </if>
+        <if test="orderBy != null and orderBy != ''">
             ORDER BY ${orderBy}
         </if>
     </select>
@@ -30,7 +33,10 @@
                 AND `${item.key}` = #{item.value}
             </foreach>
         </if>
-        <if test="orderBy != null">
+        <if test="whereSql != null and whereSql != ''">
+            AND ${whereSql}
+        </if>
+        <if test="orderBy != null and orderBy != ''">
             ORDER BY ${orderBy}
         </if>
         LIMIT 0,1
@@ -40,7 +46,7 @@
     <insert id="insert" parameterType="map">
         INSERT INTO `${tableName}`
         (
-        <if test="primaryKey != null">`${primaryKey.key}`,</if>
+        <if test="primaryKey != null and primaryKey != ''">`${primaryKey.key}`,</if>
         <if test="params != null and params.size != 0">
             <foreach item="item" collection="params" separator=",">
                 `${item.key}`
@@ -48,7 +54,7 @@
         </if>
         )
         VALUES(
-        <if test="primaryKey != null">#{primaryKey.value},</if>
+        <if test="primaryKey != null and primaryKey != ''">#{primaryKey.value},</if>
         <if test="params != null and params.size != 0">
             <foreach item="item" collection="params" separator=",">
                 #{item.value}
@@ -64,7 +70,7 @@
         </selectKey>
         INSERT INTO `${tableName}`
         (
-        <if test="primaryKey != null">`${primaryKey.key}`,</if>
+        <if test="primaryKey != null and primaryKey != ''">`${primaryKey.key}`,</if>
         <if test="params != null and params.size != 0">
             <foreach item="item" collection="params" separator=",">
                 `${item.key}`
@@ -72,7 +78,7 @@
         </if>
         )
         VALUES(
-        <if test="primaryKey != null">#{primaryKey.value},</if>
+        <if test="primaryKey != null and primaryKey != ''">#{primaryKey.value},</if>
         <if test="params != null and params.size != 0">
             <foreach item="item" collection="params" separator=",">
                 #{item.value}
@@ -91,17 +97,23 @@
             </foreach>
         </if>
         WHERE `${primaryKey.key}` = #{primaryKey.value}
+        <if test="whereSql != null and whereSql != ''">
+            AND ${whereSql}
+        </if>
     </update>
 
     <!-- 通用删除数据入口 -->
     <delete id="delete">
         DELETE FROM `${tableName}`
-        WHERE
-        <if test="primaryKey != null">`${primaryKey.key}` = #{primaryKey.value} </if>
+        WHERE 1 = 1
+        <if test="primaryKey != null and primaryKey != ''"> AND `${primaryKey.key}` = #{primaryKey.value} </if>
         <if test="params != null and params.size != 0">
             <foreach open="AND" item="item" collection="params" separator="AND">
                 `${item.key}` = #{item.value}
             </foreach>
+        </if>
+        <if test="whereSql != null and whereSql != ''">
+            AND ${whereSql}
         </if>
     </delete>
 
@@ -115,8 +127,8 @@
                 AND `${item.key}` = #{item.value}
             </foreach>
         </if>
-        <if test="orderBy != null">
-            ORDER BY ${orderBy}
+        <if test="whereSql != null and whereSql != ''">
+            AND ${whereSql}
         </if>
     </select>
     <!-- 全自动End -->

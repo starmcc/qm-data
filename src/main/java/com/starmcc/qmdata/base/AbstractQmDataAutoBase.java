@@ -3,6 +3,7 @@ package com.starmcc.qmdata.base;
 import com.starmcc.qmdata.common.QmData;
 import com.starmcc.qmdata.config.QmDataConstant;
 import com.starmcc.qmdata.exception.QmDataException;
+import com.starmcc.qmdata.exception.QmDataModelException;
 import com.starmcc.qmdata.model.QmDataModel;
 import com.starmcc.qmdata.model.ResultInsert;
 import com.starmcc.qmdata.note.Style;
@@ -13,18 +14,17 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author qm
- * @Title QmBase实现类
- * @Date 注释时间：2019/1/23 12:43
+ * @Author: qm
+ * @Date: 2019/12/29 14:11
  */
-public class QmDataImplement implements QmData {
+public abstract class AbstractQmDataAutoBase implements QmData {
 
-    private static final Logger LOG = LoggerFactory.getLogger(QmDataImplement.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractQmDataAutoReload.class);
 
     /**
      * 获取Mybatis SqlSession
@@ -34,9 +34,10 @@ public class QmDataImplement implements QmData {
     // =======================================华丽的分割线===========================================
 
     @Override
-    public <Q> List<Q> autoSelectList(Q entity, Class<Q> clamm) {
+    public <Q> List<Q> autoSelectList(Q entity, String where, String orderBy, Class<Q> clamm) {
         final long time = System.currentTimeMillis();
-        QmDataModel<Q> instance = QmDataModel.getInstance(entity, false);
+        entity = this.nullNewBean(entity, clamm);
+        QmDataModel<Q> instance = QmDataModel.getInstance(entity, where, orderBy, false);
         List<Map> mapLis = null;
         List<Q> list = null;
         try {
@@ -61,13 +62,12 @@ public class QmDataImplement implements QmData {
         return list;
     }
 
+
     @Override
-    public <Q> Q autoSelectOne(Q entity, Class<Q> clamm) {
-        if (null == entity) {
-            return null;
-        }
+    public <Q> Q autoSelectOne(Q entity, String where, String orderBy, Class<Q> clamm) {
         final long time = System.currentTimeMillis();
-        QmDataModel<Q> instance = QmDataModel.getInstance(entity, false);
+        entity = this.nullNewBean(entity, clamm);
+        QmDataModel<Q> instance = QmDataModel.getInstance(entity, where, orderBy, false);
         Map<String, Object> map = null;
         try {
             map = sqlSessionTemplate.selectOne(
@@ -117,7 +117,7 @@ public class QmDataImplement implements QmData {
         }
         final long time = System.currentTimeMillis();
         QmDataModel<Q> instance = QmDataModel.getInstance(entity, true);
-        LinkedHashMap<String, Object> paramsMap = instance.getParamsMap();
+        Map<String, Object> paramsMap = instance.getParamsMap();
         try {
             result = sqlSessionTemplate.insert(
                     QmDataConstant.AutoMethod.INSERT_GET_PK.buildNameSpace(), paramsMap);
@@ -128,14 +128,15 @@ public class QmDataImplement implements QmData {
         return ResultInsert.build(result, paramsMap.get(QmDataConstant.INSERT_PRIMARY_MAP_KEY));
     }
 
+
     @Override
-    public <Q> int autoUpdate(Q entity) {
+    public <Q> int autoUpdate(Q entity, String where) {
         int result = -1;
         if (null == entity) {
             return result;
         }
         final long time = System.currentTimeMillis();
-        QmDataModel<Q> instance = QmDataModel.getInstance(entity, true);
+        QmDataModel<Q> instance = QmDataModel.getInstance(entity, where, true);
         try {
             result = sqlSessionTemplate.update(
                     QmDataConstant.AutoMethod.UPDATE.buildNameSpace(),
@@ -149,7 +150,7 @@ public class QmDataImplement implements QmData {
 
 
     @Override
-    public <Q> int autoDelete(Q entity) {
+    public <Q> int autoDelete(Q entity, String where) {
         int result = -1;
         if (null == entity) {
             return result;
@@ -158,7 +159,7 @@ public class QmDataImplement implements QmData {
         try {
             result = sqlSessionTemplate.delete(
                     QmDataConstant.AutoMethod.DELETE.buildNameSpace(),
-                    QmDataModel.getInstance(entity, true).getParamsMap());
+                    QmDataModel.getInstance(entity, where, true).getParamsMap());
         } catch (Exception e) {
             throw new QmDataException(this.getErrMsg(), e);
         }
@@ -167,13 +168,13 @@ public class QmDataImplement implements QmData {
     }
 
     @Override
-    public <Q> int autoSelectCount(Q entity) {
+    public <Q> int autoSelectCount(Q entity, String where) {
         int result = -1;
         final long time = System.currentTimeMillis();
         try {
             result = sqlSessionTemplate.selectOne(
                     QmDataConstant.AutoMethod.SELECT_COUNT.buildNameSpace(),
-                    QmDataModel.getInstance(entity, false).getParamsMap());
+                    QmDataModel.getInstance(entity, where, false).getParamsMap());
         } catch (Exception e) {
             throw new QmDataException(this.getErrMsg(), e);
         }
@@ -182,12 +183,30 @@ public class QmDataImplement implements QmData {
     }
 
     /**
+     * 判断实体类是否为空，为空则自动创建新的对象。
+     *
+     * @param bean
+     * @param clamm
+     * @return
+     */
+    public <T> T nullNewBean(T bean, Class<T> clamm) {
+        if (null != bean) {
+            return bean;
+        }
+        try {
+            return clamm.newInstance();
+        } catch (Exception e) {
+            throw new QmDataModelException("传递实体为空，且自动创建失败!");
+        }
+    }
+
+    /**
      * 配置错误信息
      *
      * @param methodName
      * @return
      */
-    private String getErrMsg() {
+    public String getErrMsg() {
         String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();//调用的方法名
         return "SQL error using " + methodName + "! 使用 " + methodName + " 发生SQL错误!";
     }

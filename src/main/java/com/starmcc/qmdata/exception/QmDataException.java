@@ -6,6 +6,8 @@ package com.starmcc.qmdata.exception;
  * @Description QmBase错误异常
  */
 public class QmDataException extends RuntimeException {
+    private static final long serialVersionUID = 932624366579279947L;
+
     /**
      * 提供无参数的构造方法
      */

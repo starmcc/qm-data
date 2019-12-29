@@ -1,6 +1,5 @@
 package com.starmcc.qmdata.common;
 
-import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionTemplate;
 
 /**
@@ -10,7 +9,8 @@ import org.mybatis.spring.SqlSessionTemplate;
  */
 public class QmDataFactory {
 
-    private QmDataFactory(){}
+    private QmDataFactory() {
+    }
 
     /**
      * 获取QmData实例

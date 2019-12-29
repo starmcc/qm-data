@@ -20,7 +20,6 @@ public interface QmData {
      */
     <Q> List<Q> autoSelectList(Q entity, Class<Q> clamm);
 
-
     /**
      * 通用查询单条记录
      *
@@ -55,6 +54,7 @@ public interface QmData {
      */
     <Q> int autoUpdate(Q entity);
 
+
     /**
      * 通用删除记录
      *
@@ -63,6 +63,7 @@ public interface QmData {
      */
     <Q> int autoDelete(Q entity);
 
+
     /**
      * 通用查询记录数
      *
@@ -70,4 +71,138 @@ public interface QmData {
      * @return 影响行数
      */
     <Q> int autoSelectCount(Q entity);
+
+    // --------------where 重载------------------
+
+
+    /**
+     * 通用查询列表
+     *
+     * @param entity 对应表的实体类(必须带有@Table)
+     * @param where  条件sql
+     * @param clamm  对应表的实体类的Class
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <Q> List<Q> autoSelectList(Q entity, String where, Class<Q> clamm);
+
+
+    /**
+     * 通用查询单条记录
+     *
+     * @param entity 实体类(必须带有@Table)
+     * @param where  条件sql
+     * @param clamm  实体类class对象
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <Q> Q autoSelectOne(Q entity, String where, Class<Q> clamm);
+
+
+    /**
+     * 通用修改记录
+     *
+     * @param entity 对应表的实体类(必须带有@Table和@Id)
+     * @param where  条件sql
+     * @return 影响行数
+     */
+    <Q> int autoUpdate(Q entity, String where);
+
+
+    /**
+     * 通用删除记录
+     *
+     * @param entity 对应表的实体类(必须带有@Table)
+     * @param where  条件sql
+     * @return 影响行数
+     */
+    <Q> int autoDelete(Q entity, String where);
+
+
+    /**
+     * 通用查询记录数
+     *
+     * @param entity   对应表的实体类(必须带有@Table)
+     * @param whereSql 条件sql
+     * @param <Q>
+     * @return 影响行数
+     */
+    <Q> int autoSelectCount(Q entity, String whereSql);
+
+    // -------------where orderby 重载 --------------------
+
+    /**
+     * 通用查询列表
+     *
+     * @param entity  对应表的实体类(必须带有@Table)
+     * @param where   条件sql
+     * @param orderBy 排序sql
+     * @param clamm   对应表的实体类的Class
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <Q> List<Q> autoSelectList(Q entity, String where, String orderBy, Class<Q> clamm);
+
+
+    /**
+     * 通用查询单条记录
+     *
+     * @param entity  实体类(必须带有@Table)
+     * @param where   条件sql
+     * @param orderBy 排序sql
+     * @param clamm   实体类class对象
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <Q> Q autoSelectOne(Q entity, String where, String orderBy, Class<Q> clamm);
+
+    // -----------1.x 兼容接口 -------------
+
+    /**
+     * 查询列表
+     *
+     * @param sqlName 命名空间
+     * @param params  参数
+     * @return 根据返回指定的类型进行嵌套数据
+     */
+    @Deprecated
+    <Q> List<Q> selectList(String sqlName, Object params);
+
+    /**
+     * 查询单条记录
+     *
+     * @param sqlName 命名空间
+     * @param params  参数
+     * @return 根据返回指定的类型进行嵌套数据
+     */
+    @Deprecated
+    <Q> Q selectOne(String sqlName, Object params);
+
+
+    /**
+     * 插入记录
+     *
+     * @param sqlName 命名空间
+     * @param params  参数
+     * @return 影响行数
+     */
+    @Deprecated
+    int insert(String sqlName, Object params);
+
+    /**
+     * 修改记录
+     *
+     * @param sqlName 命名空间
+     * @param params  参数
+     * @return 影响行数
+     */
+    @Deprecated
+    int update(String sqlName, Object params);
+
+    /**
+     * 删除记录
+     *
+     * @param sqlName 命名空间
+     * @param params  参数
+     * @return 影响行数
+     */
+    @Deprecated
+    int delete(String sqlName, Object params);
+
 }
