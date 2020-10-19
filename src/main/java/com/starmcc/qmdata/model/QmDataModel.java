@@ -9,10 +9,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author qm
@@ -23,7 +20,7 @@ public final class QmDataModel<T> implements Serializable {
 
     private static final long serialVersionUID = 6857822692226391769L;
     private static final Logger LOG = LoggerFactory.getLogger(QmDataModel.class);
-
+    public static final int PRIVATE = 0x00000002;
     private T bean;
     private boolean isPrimaryKey;
     private Style style;
@@ -82,7 +79,7 @@ public final class QmDataModel<T> implements Serializable {
      * @param isPrimaryKey
      */
     private void buildModel(T bean, String whereSql, String orderByValue, boolean isPrimaryKey) {
-        if (null == bean) {
+        if (Objects.isNull(bean)) {
             return;
         }
         this.bean = bean;
@@ -90,17 +87,17 @@ public final class QmDataModel<T> implements Serializable {
         Table table = this.bean.getClass().getAnnotation(Table.class);
         OrderBy orderBy = this.bean.getClass().getAnnotation(OrderBy.class);
         // 获取实体类风格
-        if (null == table.style()) {
+        if (Objects.isNull(table.style())) {
             this.style = Style.UNDERLINE;
         } else {
             this.style = table.style();
         }
         // 获取该实体的表名
-        if (null != table && !StringUtils.isEmpty(table.name())) {
+        if (Objects.nonNull(table) && !StringUtils.isEmpty(table.name())) {
             this.tableName = table.name();
         } else {
             this.tableName = this.bean.getClass().getSimpleName();
-            if (null != table.style() && style == Style.UNDERLINE) {
+            if (Objects.nonNull(table.style()) && style == Style.UNDERLINE) {
                 this.tableName = QmDataStyleTools.transformNameByUnderline(this.tableName);
             }
         }
@@ -111,7 +108,7 @@ public final class QmDataModel<T> implements Serializable {
         if (!StringUtils.isEmpty(orderByValue)) {
             // 如果不等于空，则直接使用参数列表提供的orderBy语句
             this.orderByValue = orderByValue;
-        } else if (null != orderBy && !StringUtils.isEmpty(orderBy.value())) {
+        } else if (Objects.nonNull(orderBy) && !StringUtils.isEmpty(orderBy.value())) {
             // 如果参数列表的orderBy 等于空，且实体类中的OrderBy注解不为空，则直接使用orderBy注解提供的语句。
             this.orderByValue = orderBy.value();
         }
@@ -119,17 +116,19 @@ public final class QmDataModel<T> implements Serializable {
         // 获取该实体的字段进行操作
         final Field[] fields = this.bean.getClass().getDeclaredFields();
         // 如果该字段为空则返回
-        if (null == fields) {
+        if (Objects.isNull(fields)) {
             throw new QmDataModelException("检测不到该实体的字段集!");
         }
         // 遍历字段进行参数封装
         for (Field field : fields) {
-            // 开放字段权限public
-            if (!field.isAccessible()) {
-                field.setAccessible(true);
+            // 必须是私有的属性
+            if (PRIVATE != field.getModifiers()) {
+                continue;
             }
+            // 开放字段权限public
+            field.setAccessible(true);
             // 判断是否需要主键策略
-            if (isPrimaryKey && null == this.primaryKey) {
+            if (isPrimaryKey && Objects.isNull(this.primaryKey)) {
                 // 序列化该主键
                 if (this.setPrimaryKey(field)) {
                     continue;
@@ -160,7 +159,7 @@ public final class QmDataModel<T> implements Serializable {
      */
     private boolean setPrimaryKey(Field field) {
         Id idKey = field.getAnnotation(Id.class);
-        if (null == idKey) {
+        if (Objects.isNull(idKey)) {
             return false;
         }
         Object obj = null;
@@ -169,7 +168,7 @@ public final class QmDataModel<T> implements Serializable {
         } catch (IllegalAccessException e) {
             throw new QmDataModelException("读取实体类主键字段发生了异常！", e);
         }
-        if (null != obj) {
+        if (Objects.nonNull(obj)) {
             // 不等于null
             // 判断是否设置别名
             this.primaryKey = new HashMap<>(16);
@@ -198,14 +197,14 @@ public final class QmDataModel<T> implements Serializable {
     private void setFiledToList(Field field) {
         Param param = field.getAnnotation(Param.class);
         // 判断是否有该注解，如果存在并且except等于true则不加入该字段。
-        if (null != param && param.except()) {
+        if (Objects.nonNull(param) && param.except()) {
             return;
         }
         Object obj = null;
         try {
             obj = field.get(bean);
             // 如果值是null则不需要这个值了。
-            if (null == obj) {
+            if (Objects.isNull(obj)) {
                 return;
             }
         } catch (IllegalAccessException e) {
@@ -213,7 +212,7 @@ public final class QmDataModel<T> implements Serializable {
         }
         // 开始获取字段并加入字段列表
         Map<String, Object> fieldMap = new HashMap<String, Object>(16);
-        if (null == param || StringUtils.isEmpty(param.name())) {
+        if (Objects.isNull(param) || StringUtils.isEmpty(param.name())) {
             if (this.style == Style.UNDERLINE) {
                 fieldMap.put("key", QmDataStyleTools.transformNameByUnderline(field.getName()));
             } else {
@@ -223,12 +222,10 @@ public final class QmDataModel<T> implements Serializable {
             fieldMap.put("key", param.name());
         }
         fieldMap.put("value", obj);
-        if (null == this.params) {
+        if (Objects.isNull(this.params)) {
             this.params = new ArrayList<>();
         }
         this.params.add(fieldMap);
         return;
     }
-
-
 }

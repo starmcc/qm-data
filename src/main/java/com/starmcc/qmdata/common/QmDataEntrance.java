@@ -1,6 +1,6 @@
 package com.starmcc.qmdata.common;
 
-import com.starmcc.qmdata.base.AbstractQmDataOld;
+import com.starmcc.qmdata.base.AbstractQmDataAutoReload;
 import org.mybatis.spring.SqlSessionTemplate;
 
 /**
@@ -8,7 +8,7 @@ import org.mybatis.spring.SqlSessionTemplate;
  * @Date: 2019/5/26 15:49
  * @Description: QmBase入口封装
  */
-public class QmDataEntrance extends AbstractQmDataOld {
+public class QmDataEntrance extends AbstractQmDataAutoReload {
 
     /**
      * 禁止无参实例化

@@ -6,7 +6,7 @@
     <name>qm-data</name>
     <groupId>com.starmcc</groupId>
     <artifactId>qm-data</artifactId>
-    <version>2.1.0-RELEASE</version>
+    <version>2.2.0-BETA</version>
     <url>https://github.com/starmcc/qm-data</url>
     <description>qm-data</description>
 
@@ -98,33 +98,33 @@
                 </executions>
             </plugin>
             <!-- 源码插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-source-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>attach-sources</id>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
             <!-- 签名插件 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
-                <executions>
-                    <execution>
-                        <id>sign-artifacts</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>sign</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-gpg-plugin</artifactId>-->
+<!--                <version>1.5</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>sign-artifacts</id>-->
+<!--                        <phase>verify</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>sign</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
     <!-- 依赖库 -->
