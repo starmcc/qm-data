@@ -13,7 +13,7 @@
     <properties>
         <jdk.version>1.8</jdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mybatis-spring-boot-starter.version>2.1.1</mybatis-spring-boot-starter.version>
+        <mybatis-spring-boot-starter.version>2.1.3</mybatis-spring-boot-starter.version>
         <cglib.version>2.2.2</cglib.version>
         <slf4j-api.version>1.7.25</slf4j-api.version>
     </properties>

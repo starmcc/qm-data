@@ -12,6 +12,7 @@
 ### 1.2 Trait
 
 - 自动`SQL`增删改查操作
+- 普通增删改查无需编写XML和DAO
 - 高度自由的数据持久交互
 - 永久开源
 
@@ -30,7 +31,9 @@
 
 ### 1.4 Semi Auto SQL
 
-在使用过程中，只需要对实体类进行一些必要的注解修饰，就可以利用实体类进行自动`SQL`增删改查，无需书写`SQL`完成业务数据库操作。也可以自行书写`SQL`完成复杂的业务数据库操作。
+在使用过程中，只需要对实体类进行一些必要的注解修饰，就可以利用实体类进行自动`SQL`增删改查，无需书写`SQL`完成业务数据库操作。
+
+也可以自行书写`SQL`完成复杂的业务数据库操作。
 
 ### 1.5 Help Document
 
@@ -54,16 +57,17 @@
 <dependency>
   <groupId>com.starmcc</groupId>
   <artifactId>qm-data</artifactId>
+  <version>x.x.x-RELEASE</version>
 </dependency>
 ```
 
 ## 3. Environment
 
-* `java - JDK 1.8` 
-* `Maven 2.0` 
-* `2.x` > `mybatis-spring-boot-starter 2.1.1` 
+* `slf4j 1.7.25` 
+* `cglib 2.2.2` 
+* `2.x` > `mybatis-spring-boot-starter 2.1.3` 
 * `1.x` > `mybatis 3.4.6` 
 
 ## 4. Main Content
 
-主要依赖`Mybatis`拓展的一个自动化SQL插件。
+主要依赖`Mybatis`拓展的一个自动化SQL工具集。
