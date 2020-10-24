@@ -46,7 +46,7 @@
     <insert id="insert" parameterType="map">
         INSERT INTO `${tableName}`
         (
-        <if test="primaryKey != null and primaryKey != ''">`${primaryKey.key}`,</if>
+        <if test="primaryKey != null">`${primaryKey.key}`,</if>
         <if test="params != null and params.size != 0">
             <foreach item="item" collection="params" separator=",">
                 `${item.key}`
@@ -54,7 +54,7 @@
         </if>
         )
         VALUES(
-        <if test="primaryKey != null and primaryKey != ''">#{primaryKey.value},</if>
+        <if test="primaryKey != null">#{primaryKey.value},</if>
         <if test="params != null and params.size != 0">
             <foreach item="item" collection="params" separator=",">
                 #{item.value}
@@ -70,7 +70,7 @@
         </selectKey>
         INSERT INTO `${tableName}`
         (
-        <if test="primaryKey != null and primaryKey != ''">`${primaryKey.key}`,</if>
+        <if test="primaryKey != null">`${primaryKey.key}`,</if>
         <if test="params != null and params.size != 0">
             <foreach item="item" collection="params" separator=",">
                 `${item.key}`
@@ -78,7 +78,7 @@
         </if>
         )
         VALUES(
-        <if test="primaryKey != null and primaryKey != ''">#{primaryKey.value},</if>
+        <if test="primaryKey != null">#{primaryKey.value},</if>
         <if test="params != null and params.size != 0">
             <foreach item="item" collection="params" separator=",">
                 #{item.value}
@@ -106,7 +106,7 @@
     <delete id="delete">
         DELETE FROM `${tableName}`
         WHERE 1 = 1
-        <if test="primaryKey != null and primaryKey != ''"> AND `${primaryKey.key}` = #{primaryKey.value} </if>
+        <if test="primaryKey != null"> AND `${primaryKey.key}` = #{primaryKey.value} </if>
         <if test="params != null and params.size != 0">
             <foreach open="AND" item="item" collection="params" separator="AND">
                 `${item.key}` = #{item.value}

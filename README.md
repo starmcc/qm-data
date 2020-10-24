@@ -64,9 +64,9 @@
 ## 3. Environment
 
 * `slf4j 1.7.25` 
-* `cglib 2.2.2` 
 * `2.x` > `mybatis-spring-boot-starter 2.1.3` 
 * `1.x` > `mybatis 3.4.6` 
+* `1.x` > `cglib 2.2.2` 
 
 ## 4. Main Content
 
