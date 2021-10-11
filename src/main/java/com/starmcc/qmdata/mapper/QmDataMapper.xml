@@ -118,7 +118,7 @@
     </delete>
 
     <!-- 查询条数 -->
-    <select id="selectCount" resultType="Integer">
+    <select id="selectCount" resultType="Long">
         SELECT COUNT(1)
         FROM `${tableName}`
         WHERE 1 = 1

@@ -90,7 +90,7 @@ public abstract class AbstractQmDataAutoReload extends AbstractQmDataAutoBase {
     }
 
     @Override
-    public <Q> int autoSelectCount(Q entity) {
+    public <Q> Long autoSelectCount(Q entity) {
         return super.autoSelectCount(entity, null);
     }
 

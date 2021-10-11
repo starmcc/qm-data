@@ -180,12 +180,12 @@ public abstract class AbstractQmDataAutoBase implements QmData {
     }
 
     @Override
-    public <Q> int autoSelectCount(Q entity, String where) {
+    public <Q> Long autoSelectCount(Q entity, String where) {
         final long time = System.currentTimeMillis();
         if (Objects.isNull(entity)) {
             throw new QmDataException("autoSelectCount method param is not found");
         }
-        int result = 0;
+        Long result = 0L;
         try {
             result = sqlSessionTemplate.selectOne(
                     QmDataConstant.AutoMethod.SELECT_COUNT.buildNameSpace(),

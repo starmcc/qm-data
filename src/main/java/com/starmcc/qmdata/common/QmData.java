@@ -104,7 +104,8 @@ public interface QmData {
      * @param entity 对应表的实体类 (必须带有@Table)
      * @return 影响行数
      */
-    <Q> int autoSelectCount(Q entity);
+
+    <Q> Long autoSelectCount(Q entity);
 
     // --------------where 重载------------------
 
@@ -195,7 +196,7 @@ public interface QmData {
      * @param <Q>
      * @return 影响行数
      */
-    <Q> int autoSelectCount(Q entity, String whereSql);
+    <Q> Long autoSelectCount(Q entity, String whereSql);
 
     // -------------where orderby 重载 --------------------
 
