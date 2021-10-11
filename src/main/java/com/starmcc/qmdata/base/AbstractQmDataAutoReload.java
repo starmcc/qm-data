@@ -56,4 +56,43 @@ public abstract class AbstractQmDataAutoReload extends AbstractQmDataAutoBase {
         return super.autoSelectCount(entity, null, clamm);
     }
 
+    @Override
+    public <M> List<M> autoSelectList(M entity) {
+        return super.autoSelectList(entity, null, null, null);
+    }
+
+    @Override
+    public <M> M autoSelectOne(M entity) {
+        return super.autoSelectOne(entity, null, null, null);
+    }
+
+    @Override
+    public <M> Long autoSelectCount(M entity) {
+        return super.autoSelectCount(entity, null, null);
+    }
+
+    @Override
+    public <M> Long autoSelectCount(M entity, String whereSql) {
+        return super.autoSelectCount(entity, whereSql, null);
+    }
+
+    @Override
+    public <M> List<M> autoSelectList(M entity, String where, String orderBy) {
+        return super.autoSelectList(entity, where, orderBy, null);
+    }
+
+    @Override
+    public <M> List<M> autoSelectList(M entity, String where) {
+        return super.autoSelectList(entity, where, null, null);
+    }
+
+    @Override
+    public <M> M autoSelectOne(M entity, String where, String orderBy) {
+        return super.autoSelectOne(entity, where, orderBy, null);
+    }
+
+    @Override
+    public <M> M autoSelectOne(M entity, String where) {
+        return super.autoSelectOne(entity, where, null, null);
+    }
 }

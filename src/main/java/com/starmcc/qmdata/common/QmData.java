@@ -20,6 +20,14 @@ public interface QmData {
      */
     <Q, M> List<M> autoSelectList(Q entity, Class<M> clamm);
 
+    /**
+     * 通用查询列表
+     *
+     * @param entity 对应表的实体类
+     * @param clamm  对应表的实体类的Class (以该对象作表名解析)
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <M> List<M> autoSelectList(M entity);
 
     /**
      * 通用查询单条记录
@@ -30,6 +38,14 @@ public interface QmData {
      */
     <Q, M> M autoSelectOne(Q entity, Class<M> clamm);
 
+    /**
+     * 通用查询单条记录
+     *
+     * @param entity 实体类 (以该对象作表名解析)
+     * @param clamm  实体类class对象
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <M> M autoSelectOne(M entity);
 
     /**
      * 通用插入记录
@@ -75,6 +91,14 @@ public interface QmData {
 
     <Q, M> Long autoSelectCount(Q entity, Class<M> clamm);
 
+    /**
+     * 通用查询记录数
+     *
+     * @param entity 对应表的实体类 (以该对象作表名解析)
+     * @return 影响行数
+     */
+
+    <M> Long autoSelectCount(M entity);
 
     /**
      * 通用修改记录
@@ -95,6 +119,7 @@ public interface QmData {
      */
     <Q> int autoDelete(Q entity, String where);
 
+    // -------------where orderby 重载 --------------------
 
     /**
      * 通用查询记录数
@@ -106,8 +131,14 @@ public interface QmData {
      */
     <Q, M> Long autoSelectCount(Q entity, String whereSql, Class<M> clamm);
 
-    // -------------where orderby 重载 --------------------
-
+    /**
+     * 通用查询记录数
+     *
+     * @param entity   对应表的实体类 (以该对象作表名解析)
+     * @param whereSql 条件sql
+     * @return 影响行数
+     */
+    <M> Long autoSelectCount(M entity, String whereSql);
 
     /**
      * 通用查询列表
@@ -123,12 +154,32 @@ public interface QmData {
     /**
      * 通用查询列表
      *
+     * @param entity  对应表的实体类 (以该对象作表名解析)
+     * @param where   条件sql
+     * @param orderBy 排序sql
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <M> List<M> autoSelectList(M entity, String where, String orderBy);
+
+
+    /**
+     * 通用查询列表
+     *
      * @param entity 对应表的实体类
      * @param where  条件sql
      * @param clamm  对应表的实体类的Class (以该对象作表名解析)
      * @return 根据参数指定的类型进行嵌套数据
      */
     <Q, M> List<M> autoSelectList(Q entity, String where, Class<M> clamm);
+
+    /**
+     * 通用查询列表
+     *
+     * @param entity 对应表的实体类 (以该对象作表名解析)
+     * @param where  条件sql
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <M> List<M> autoSelectList(M entity, String where);
 
     /**
      * 通用查询列表
@@ -150,6 +201,15 @@ public interface QmData {
      */
     <Q, M> M autoSelectOne(Q entity, String where, String orderBy, Class<M> clamm);
 
+    /**
+     * 通用查询单条记录
+     *
+     * @param entity  实体类 (以该对象作表名解析)
+     * @param where   条件sql
+     * @param orderBy 排序sql
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <M> M autoSelectOne(M entity, String where, String orderBy);
 
     /**
      * 通用查询单条记录
@@ -160,6 +220,16 @@ public interface QmData {
      * @return 根据参数指定的类型进行嵌套数据
      */
     <Q, M> M autoSelectOne(Q entity, String where, Class<M> clamm);
+
+    /**
+     * 通用查询单条记录
+     *
+     * @param entity 实体类 (以该对象作表名解析)
+     * @param where  条件sql
+     * @param clamm  实体类class对象
+     * @return 根据参数指定的类型进行嵌套数据
+     */
+    <M> M autoSelectOne(M entity, String where);
 
     /**
      * 通用查询单条记录

@@ -38,7 +38,7 @@ public abstract class AbstractQmDataAutoBase implements QmData {
 
     @Override
     public <Q, M> List<M> autoSelectList(Q entity, String where, String orderBy, Class<M> clamm) {
-        if (Objects.isNull(clamm)) {
+        if (Objects.isNull(entity) && Objects.isNull(clamm)) {
             throw new QmDataException("selectList method param is not found");
         }
         final long time = System.currentTimeMillis();
@@ -157,10 +157,10 @@ public abstract class AbstractQmDataAutoBase implements QmData {
 
     @Override
     public <Q, M> Long autoSelectCount(Q entity, String where, Class<M> clamm) {
-        final long time = System.currentTimeMillis();
-        if (Objects.isNull(entity)) {
+        if (Objects.isNull(entity) && Objects.isNull(clamm)) {
             throw new QmDataException("autoSelectCount method param is not found");
         }
+        final long time = System.currentTimeMillis();
         Long result = 0L;
         try {
             result = sqlSessionTemplate.selectOne(QmDataConstant.AutoMethod.SELECT_COUNT.buildNameSpace(),
