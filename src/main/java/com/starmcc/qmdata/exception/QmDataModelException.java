@@ -1,9 +1,9 @@
 package com.starmcc.qmdata.exception;
 
 /**
- * @author qm
- * @date 2019/1/13 3:31
- * @Description QmDataModelException异常
+ * @author starmcc
+ * @version 2019/1/13 3:31
+ * QmDataModelException异常
  */
 public class QmDataModelException extends RuntimeException {
 
@@ -18,6 +18,7 @@ public class QmDataModelException extends RuntimeException {
 
     /**
      * 提供一个有参数的构造方法，可自动生成
+     *
      * @param message
      */
     public QmDataModelException(String message) {

@@ -12,14 +12,17 @@ import com.starmcc.qmdata.util.QmDataStyleTools;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * @Author: qm
- * @Date: 2019/12/29 14:11
+ * @author starmcc
+ * @version 2019/12/29 14:11
+ * QmData基础实现
  */
 public abstract class AbstractQmDataAutoBase implements QmData {
 
@@ -34,35 +37,27 @@ public abstract class AbstractQmDataAutoBase implements QmData {
     // =======================================华丽的分割线===========================================
 
     @Override
-    public <Q> List<Q> autoSelectList(Q entity, String where, String orderBy, Class<Q> clamm) {
-        final long time = System.currentTimeMillis();
-        if (Objects.isNull(entity) && Objects.isNull(clamm)) {
+    public <Q, M> List<M> autoSelectList(Q entity, String where, String orderBy, Class<M> clamm) {
+        if (Objects.isNull(clamm)) {
             throw new QmDataException("selectList method param is not found");
         }
+        final long time = System.currentTimeMillis();
         // 判断实体类是否为空，为空则自动创建新的对象。
-        entity = this.buildBean(entity, clamm);
-        clamm = Objects.isNull(entity) ? clamm : (Class<Q>) entity.getClass();
-
-        QmDataModel<Q> instance = QmDataModel.getInstance(entity, where, orderBy, false);
-        List<Map> mapLis = null;
-        List<Q> list = null;
+        QmDataModel<Q> instance = QmDataModel.getInstance(entity, where, orderBy, false, clamm);
+        List<Map<String, Object>> mapLis = null;
+        List<M> list = new ArrayList<>();
         try {
             // 执行SQL
-            mapLis = sqlSessionTemplate.selectList(
-                    QmDataConstant.AutoMethod.SELECT_LIST.buildNameSpace(),
-                    instance.getParamsMap());
+            mapLis = sqlSessionTemplate.selectList(QmDataConstant.AutoMethod.SELECT_LIST.buildNameSpace(), instance.getParamsMap());
         } catch (Exception e) {
             throw new QmDataException(this.getErrMsg(), e);
         }
-        if (null != mapLis && mapLis.size() != 0) {
+        if (!CollectionUtils.isEmpty(mapLis)) {
             // 如果数据库字段是下划线样式 则进行转换
-            Table table = entity.getClass().getAnnotation(Table.class);
-            if (table != null && table.style() == Style.UNDERLINE) {
-                for (int i = 0; i < mapLis.size(); i++) {
-                    mapLis.set(i, QmDataStyleTools.transformMapForHump(mapLis.get(i)));
-                }
+            Table table = clamm.getAnnotation(Table.class);
+            for (Map<String, Object> map : mapLis) {
+                list.add(this.transitionBean(table, map, clamm));
             }
-            list = QmConvertUtil.mapsToBeans(mapLis, clamm);
         }
         LOG.info("autoSelectList elapsed time:{}/ms", System.currentTimeMillis() - time);
         return list;
@@ -70,37 +65,24 @@ public abstract class AbstractQmDataAutoBase implements QmData {
 
 
     @Override
-    public <Q> Q autoSelectOne(Q entity, String where, String orderBy, Class<Q> clamm) {
-        final long time = System.currentTimeMillis();
+    public <Q, M> M autoSelectOne(Q entity, String where, String orderBy, Class<M> clamm) {
         if (Objects.isNull(entity) && Objects.isNull(clamm)) {
-            throw new QmDataException("selectList method param is not found");
+            throw new QmDataException("selectOne method param is not found");
         }
-        // 判断实体类是否为空，为空则自动创建新的对象。
-        entity = this.buildBean(entity, clamm);
-        clamm = Objects.isNull(entity) ? clamm : (Class<Q>) entity.getClass();
-
-        QmDataModel<Q> instance = QmDataModel.getInstance(entity, where, orderBy, false);
+        final long time = System.currentTimeMillis();
+        QmDataModel<Q> instance = QmDataModel.getInstance(entity, where, orderBy, false, clamm);
         Map<String, Object> map = null;
         try {
-            map = sqlSessionTemplate.selectOne(
-                    QmDataConstant.AutoMethod.SELECT_ONE.buildNameSpace(),
-                    instance.getParamsMap());
+            map = sqlSessionTemplate.selectOne(QmDataConstant.AutoMethod.SELECT_ONE.buildNameSpace(), instance.getParamsMap());
         } catch (Exception e) {
             throw new QmDataException(this.getErrMsg(), e);
         }
-        if (map != null) {
-            // 如果数据库字段是下划线样式 则进行转换
-            Table table = entity.getClass().getAnnotation(Table.class);
-            if (table != null && table.style() == Style.UNDERLINE) {
-                map = QmDataStyleTools.transformMapForHump(map);
-            }
-            entity = QmConvertUtil.mapToBean(map, clamm);
-        } else {
-            entity = null;
-        }
+        Table table = entity.getClass().getAnnotation(Table.class);
+        M resultEntity = Objects.nonNull(map) ? this.transitionBean(table, map, clamm) : null;
         LOG.info("autoSelectOne elapsed time:{}/ms", System.currentTimeMillis() - time);
-        return entity;
+        return resultEntity;
     }
+
 
     @Override
     public <Q> int autoInsert(Q entity) {
@@ -111,9 +93,7 @@ public abstract class AbstractQmDataAutoBase implements QmData {
         final long time = System.currentTimeMillis();
         QmDataModel<Q> instance = QmDataModel.getInstance(entity, true);
         try {
-            result = sqlSessionTemplate.insert(
-                    QmDataConstant.AutoMethod.INSERT.buildNameSpace(),
-                    instance.getParamsMap());
+            result = sqlSessionTemplate.insert(QmDataConstant.AutoMethod.INSERT.buildNameSpace(), instance.getParamsMap());
         } catch (Exception e) {
             throw new QmDataException(this.getErrMsg(), e);
         }
@@ -131,8 +111,7 @@ public abstract class AbstractQmDataAutoBase implements QmData {
         QmDataModel<Q> instance = QmDataModel.getInstance(entity, true);
         Map<String, Object> paramsMap = instance.getParamsMap();
         try {
-            result = sqlSessionTemplate.insert(
-                    QmDataConstant.AutoMethod.INSERT_GET_PK.buildNameSpace(), paramsMap);
+            result = sqlSessionTemplate.insert(QmDataConstant.AutoMethod.INSERT_GET_PK.buildNameSpace(), paramsMap);
         } catch (Exception e) {
             throw new QmDataException(this.getErrMsg(), e);
         }
@@ -150,9 +129,7 @@ public abstract class AbstractQmDataAutoBase implements QmData {
         final long time = System.currentTimeMillis();
         QmDataModel<Q> instance = QmDataModel.getInstance(entity, where, true);
         try {
-            result = sqlSessionTemplate.update(
-                    QmDataConstant.AutoMethod.UPDATE.buildNameSpace(),
-                    instance.getParamsMap());
+            result = sqlSessionTemplate.update(QmDataConstant.AutoMethod.UPDATE.buildNameSpace(), instance.getParamsMap());
         } catch (Exception e) {
             throw new QmDataException(this.getErrMsg(), e);
         }
@@ -169,8 +146,7 @@ public abstract class AbstractQmDataAutoBase implements QmData {
         }
         final long time = System.currentTimeMillis();
         try {
-            result = sqlSessionTemplate.delete(
-                    QmDataConstant.AutoMethod.DELETE.buildNameSpace(),
+            result = sqlSessionTemplate.delete(QmDataConstant.AutoMethod.DELETE.buildNameSpace(),
                     QmDataModel.getInstance(entity, where, true).getParamsMap());
         } catch (Exception e) {
             throw new QmDataException(this.getErrMsg(), e);
@@ -180,16 +156,15 @@ public abstract class AbstractQmDataAutoBase implements QmData {
     }
 
     @Override
-    public <Q> Long autoSelectCount(Q entity, String where) {
+    public <Q, M> Long autoSelectCount(Q entity, String where, Class<M> clamm) {
         final long time = System.currentTimeMillis();
         if (Objects.isNull(entity)) {
             throw new QmDataException("autoSelectCount method param is not found");
         }
         Long result = 0L;
         try {
-            result = sqlSessionTemplate.selectOne(
-                    QmDataConstant.AutoMethod.SELECT_COUNT.buildNameSpace(),
-                    QmDataModel.getInstance(entity, where, false).getParamsMap());
+            result = sqlSessionTemplate.selectOne(QmDataConstant.AutoMethod.SELECT_COUNT.buildNameSpace(),
+                    QmDataModel.getInstance(entity, where, null, false, clamm).getParamsMap());
         } catch (Exception e) {
             throw new QmDataException(this.getErrMsg(), e);
         }
@@ -198,28 +173,31 @@ public abstract class AbstractQmDataAutoBase implements QmData {
     }
 
     /**
-     * 判断实体类是否为空，为空则自动创建新的对象。
+     * 转换Map
      *
-     * @param bean
-     * @param clamm
+     * @param entity
+     * @param map
+     * @param <Q>
      * @return
      */
-    public <T> T buildBean(T bean, Class<T> clamm) {
-        try {
-            return Objects.nonNull(bean) ? bean : clamm.newInstance();
-        } catch (Exception e) {
-            throw new QmDataException("传递实体为空，且自动创建失败!");
+    private <M> M transitionBean(Table table, Map<String, Object> map, Class<M> clamm) {
+        if (Objects.nonNull(table) && table.style() == Style.HUMP) {
+            return QmConvertUtil.mapToBean(map, clamm);
         }
+        // 如果数据库字段是下划线样式 则进行转换
+        map = QmDataStyleTools.transformMapForHump(map);
+        return QmConvertUtil.mapToBean(map, clamm);
     }
 
     /**
      * 配置错误信息
      *
      * @param methodName
-     * @return
+     * @return msg
      */
-    public String getErrMsg() {
-        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();//调用的方法名
+    private String getErrMsg() {
+        //调用的方法名
+        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
         return "SQL error using " + methodName + "! 使用 " + methodName + " 发生SQL错误!";
     }
 

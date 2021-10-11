@@ -7,9 +7,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author qm
- * @date 2019/1/23 11:22
- * @Description 风格转换工具
+ * @author starmcc
+ * @version 2019/1/23 11:22
+ * 风格转换工具
  */
 public final class QmDataStyleTools {
 
@@ -32,7 +32,7 @@ public final class QmDataStyleTools {
      * 使用递归模式 转换map中的key名样式
      *
      * @param map
-     * @return
+     * @return map
      */
     public final static Map transformMapForHump(Map map) {
         Iterator iter = map.entrySet().iterator();
@@ -42,7 +42,7 @@ public final class QmDataStyleTools {
             String key = (String) entry.getKey();
             Object val = entry.getValue();
             key = transformNameByHump(key);
-            if (null != val
+            if (Objects.nonNull(val)
                     && !val.getClass().isPrimitive()
                     && !isPackDataTypes(val.getClass())) {
                 Map mapTemp = (Map) val;
@@ -81,7 +81,7 @@ public final class QmDataStyleTools {
      * 转换风格 驼峰转下划线
      *
      * @param fieldName 属性名称
-     * @return
+     * @return fieldName
      */
     public final static String transformNameByUnderline(String fieldName) {
         fieldName = toLowerCaseFirstOne(fieldName);
@@ -115,7 +115,7 @@ public final class QmDataStyleTools {
      * 转换风格 下划线转驼峰
      *
      * @param fieldName 属性名称
-     * @return
+     * @return fieldName
      */
     public final static String transformNameByHump(String fieldName) {
         Pattern pattern = Pattern.compile(PATTERN_2);

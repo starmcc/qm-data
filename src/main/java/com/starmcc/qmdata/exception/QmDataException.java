@@ -1,9 +1,9 @@
 package com.starmcc.qmdata.exception;
 
 /**
- * @author qm
- * @date 2019/1/13 16:06
- * @Description QmBase错误异常
+ * @author starmcc
+ * @version 2019/1/13 16:06
+ * QmBase错误异常
  */
 public class QmDataException extends RuntimeException {
     private static final long serialVersionUID = 932624366579279947L;
@@ -17,6 +17,7 @@ public class QmDataException extends RuntimeException {
 
     /**
      * 提供一个有参数的构造方法，可自动生成
+     *
      * @param message
      */
     public QmDataException(String message) {
@@ -26,6 +27,7 @@ public class QmDataException extends RuntimeException {
 
     /**
      * 提供一个带参的构造方法，并且输出一些异常信息
+     *
      * @param message
      * @param cause
      */

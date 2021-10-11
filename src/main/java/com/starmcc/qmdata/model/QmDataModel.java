@@ -1,5 +1,6 @@
 package com.starmcc.qmdata.model;
 
+import com.starmcc.qmdata.exception.QmDataException;
 import com.starmcc.qmdata.exception.QmDataModelException;
 import com.starmcc.qmdata.note.*;
 import com.starmcc.qmdata.util.QmDataStyleTools;
@@ -12,36 +13,42 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * @author qm
- * @date 2018年11月24日 上午2:31:35
- * @Description 数据持久层封装Model
+ * @author starmcc
+ * @version 2018年11月24日 上午2:31:35
+ * 数据持久层封装Model
  */
-public final class QmDataModel<T> implements Serializable {
+public final class QmDataModel<Q> implements Serializable {
 
     private static final long serialVersionUID = 6857822692226391769L;
     private static final Logger LOG = LoggerFactory.getLogger(QmDataModel.class);
     public static final int PRIVATE = 0x00000002;
-    private T bean;
     private boolean isPrimaryKey;
     private Style style;
     private String tableName;
     private String whereSql;
     private String orderByValue;
     private Map<String, Object> primaryKey = null;
-    private List<Map<String, Object>> params = null;
-    private Map<String, Object> paramsMap = new HashMap<>();
+    private final List<Map<String, Object>> params = new ArrayList<>();
+    private final Map<String, Object> paramsMap = new HashMap<>();
 
 
-    public static <T> QmDataModel<T> getInstance(T bean, boolean isPrimaryKey) {
-        return QmDataModel.getInstance(bean, null, null, isPrimaryKey);
+    public static <Q> QmDataModel<Q> getInstance(Q bean, boolean isPrimaryKey) {
+        if (Objects.isNull(bean)) {
+            return null;
+        }
+        return QmDataModel.getInstance(bean, null, null, isPrimaryKey, bean.getClass());
     }
 
-    public static <T> QmDataModel<T> getInstance(T bean, String whereSql, boolean isPrimaryKey) {
-        return QmDataModel.getInstance(bean, whereSql, null, isPrimaryKey);
+    public static <Q> QmDataModel<Q> getInstance(Q bean, String whereSql, boolean isPrimaryKey) {
+        if (Objects.isNull(bean)) {
+            return null;
+        }
+        return QmDataModel.getInstance(bean, whereSql, null, isPrimaryKey, bean.getClass());
     }
 
-    public static <T> QmDataModel<T> getInstance(T bean, String whereSql, String orderBy, boolean isPrimaryKey) {
-        return new QmDataModel<T>(bean, whereSql, orderBy, isPrimaryKey);
+    public static <Q> QmDataModel<Q> getInstance(Q query, String whereSql, String orderBy, boolean isPrimaryKey, Class<?> clamm) {
+        clamm = Objects.isNull(clamm) ? query.getClass() : clamm;
+        return new QmDataModel<Q>(query, whereSql, orderBy, isPrimaryKey, clamm);
     }
 
 
@@ -51,11 +58,15 @@ public final class QmDataModel<T> implements Serializable {
     /**
      * 构造一个Model
      *
-     * @param bean
+     * @param query
+     * @param whereSql
+     * @param orderBy
+     * @param isPrimaryKey
+     * @param clamm
      */
-    private QmDataModel(T bean, String whereSql, String orderBy, boolean isPrimaryKey) {
+    private QmDataModel(Q query, String whereSql, String orderBy, boolean isPrimaryKey, Class<?> clamm) {
         // 构建模型
-        this.buildModel(bean, whereSql, orderBy, isPrimaryKey);
+        this.buildModel(query, whereSql, orderBy, isPrimaryKey, clamm);
         // 构建 paramsMap
         this.buildParamsMap();
     }
@@ -63,7 +74,7 @@ public final class QmDataModel<T> implements Serializable {
     /**
      * 获取实体类参数封装Map
      *
-     * @return
+     * @return paramsMap
      */
     public Map<String, Object> getParamsMap() {
         return paramsMap;
@@ -73,48 +84,38 @@ public final class QmDataModel<T> implements Serializable {
     /**
      * 构建模型
      *
-     * @param bean
+     * @param query
      * @param whereSql
      * @param orderBy
      * @param isPrimaryKey
      */
-    private void buildModel(T bean, String whereSql, String orderByValue, boolean isPrimaryKey) {
-        if (Objects.isNull(bean)) {
-            return;
+    private void buildModel(Q query, String whereSql, String orderByValue, boolean isPrimaryKey, Class<?> clamm) {
+        if (Objects.isNull(query)) {
+            query = this.buildBean(clamm);
         }
-        this.bean = bean;
         this.isPrimaryKey = isPrimaryKey;
-        Table table = this.bean.getClass().getAnnotation(Table.class);
-        OrderBy orderBy = this.bean.getClass().getAnnotation(OrderBy.class);
-        // 获取实体类风格
-        if (Objects.isNull(table.style())) {
-            this.style = Style.UNDERLINE;
-        } else {
-            this.style = table.style();
-        }
+        Table table = clamm.getAnnotation(Table.class);
         // 获取该实体的表名
-        if (Objects.nonNull(table) && !StringUtils.isEmpty(table.name())) {
-            this.tableName = table.name();
-        } else {
-            this.tableName = this.bean.getClass().getSimpleName();
-            if (Objects.nonNull(table.style()) && style == Style.UNDERLINE) {
-                this.tableName = QmDataStyleTools.transformNameByUnderline(this.tableName);
-            }
+        this.tableName = Objects.nonNull(table) && StringUtils.hasText(table.name()) ? table.name() : clamm.getSimpleName();
+        // 获取实体类风格
+        this.style = Objects.nonNull(table) && Objects.nonNull(table.style()) ? table.style() : Style.UNDERLINE;
+        if (style == Style.UNDERLINE) {
+            // 转换风格
+            this.tableName = QmDataStyleTools.transformNameByUnderline(this.tableName);
         }
-
         this.whereSql = whereSql;
-
+        OrderBy orderBy = query.getClass().getAnnotation(OrderBy.class);
         // 获取orderby SQL语句
-        if (!StringUtils.isEmpty(orderByValue)) {
+        if (StringUtils.hasText(orderByValue)) {
             // 如果不等于空，则直接使用参数列表提供的orderBy语句
             this.orderByValue = orderByValue;
-        } else if (Objects.nonNull(orderBy) && !StringUtils.isEmpty(orderBy.value())) {
+        } else if (Objects.nonNull(orderBy) && StringUtils.hasText(orderBy.value())) {
             // 如果参数列表的orderBy 等于空，且实体类中的OrderBy注解不为空，则直接使用orderBy注解提供的语句。
             this.orderByValue = orderBy.value();
         }
 
         // 获取该实体的字段进行操作
-        final Field[] fields = this.bean.getClass().getDeclaredFields();
+        final Field[] fields = query.getClass().getDeclaredFields();
         // 如果该字段为空则返回
         if (Objects.isNull(fields)) {
             throw new QmDataModelException("检测不到该实体的字段集!");
@@ -130,12 +131,12 @@ public final class QmDataModel<T> implements Serializable {
             // 判断是否需要主键策略
             if (isPrimaryKey && Objects.isNull(this.primaryKey)) {
                 // 序列化该主键
-                if (this.setPrimaryKey(field)) {
+                if (this.setPrimaryKey(query, field)) {
                     continue;
                 }
             }
             // 序列化该字段
-            this.setFiledToList(field);
+            this.setFiledToList(query, field);
         }
     }
 
@@ -157,7 +158,7 @@ public final class QmDataModel<T> implements Serializable {
      * @param id
      * @return
      */
-    private boolean setPrimaryKey(Field field) {
+    private boolean setPrimaryKey(Q bean, Field field) {
         Id idKey = field.getAnnotation(Id.class);
         if (Objects.isNull(idKey)) {
             return false;
@@ -172,7 +173,7 @@ public final class QmDataModel<T> implements Serializable {
             // 不等于null
             // 判断是否设置别名
             this.primaryKey = new HashMap<>(16);
-            if (StringUtils.isEmpty(idKey.name())) {
+            if (!StringUtils.hasText(idKey.name())) {
                 String key = field.getName();
                 if (this.style == Style.UNDERLINE) {
                     this.primaryKey.put("key", QmDataStyleTools.transformNameByUnderline(key));
@@ -194,7 +195,7 @@ public final class QmDataModel<T> implements Serializable {
      * @param field
      * @return
      */
-    private void setFiledToList(Field field) {
+    private void setFiledToList(Q bean, Field field) {
         Param param = field.getAnnotation(Param.class);
         // 判断是否有该注解，如果存在并且except等于true则不加入该字段。
         if (Objects.nonNull(param) && param.except()) {
@@ -212,7 +213,7 @@ public final class QmDataModel<T> implements Serializable {
         }
         // 开始获取字段并加入字段列表
         Map<String, Object> fieldMap = new HashMap<String, Object>(16);
-        if (Objects.isNull(param) || StringUtils.isEmpty(param.name())) {
+        if (Objects.isNull(param) || !StringUtils.hasText(param.name())) {
             if (this.style == Style.UNDERLINE) {
                 fieldMap.put("key", QmDataStyleTools.transformNameByUnderline(field.getName()));
             } else {
@@ -222,10 +223,23 @@ public final class QmDataModel<T> implements Serializable {
             fieldMap.put("key", param.name());
         }
         fieldMap.put("value", obj);
-        if (Objects.isNull(this.params)) {
-            this.params = new ArrayList<>();
-        }
         this.params.add(fieldMap);
         return;
     }
+
+    /**
+     * 判断实体类是否为空，为空则自动创建新的对象。
+     *
+     * @param bean
+     * @param clamm
+     * @return
+     */
+    private <Q> Q buildBean(Class<?> clamm) {
+        try {
+            return (Q) clamm.newInstance();
+        } catch (Exception e) {
+            throw new QmDataException("传递实体为空，且自动创建失败!");
+        }
+    }
+
 }

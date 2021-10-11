@@ -1,10 +1,8 @@
 package com.starmcc.qmdata.config;
 
-import com.starmcc.qmdata.exception.QmDataException;
-
 /**
- * @Author: qm
- * @Date: 2019/12/14 14:11
+ * @author starmcc
+ * @version 2019/12/14 14:11
  */
 public class QmDataConstant {
 
@@ -31,7 +29,7 @@ public class QmDataConstant {
 
         private String id;
 
-        private AutoMethod(String id){
+        private AutoMethod(String id) {
             this.id = id;
         }
 
@@ -41,9 +39,10 @@ public class QmDataConstant {
 
         /**
          * 构建MapperNameSpace
-         * @return
+         *
+         * @return nameSpace
          */
-        public String buildNameSpace(){
+        public String buildNameSpace() {
             return QmDataConstant.QM_NAMESPACE + this.id;
         }
     }
