@@ -1,9 +1,9 @@
 package com.starmcc.qmdata.note;
 
 /**
- * @author qm
- * @date 2019/1/23 10:18
- * @Description 数据库字段风格
+ * @author starmcc
+ * @version 2019/1/23 10:18
+ * 数据库字段风格
  */
 public enum Style {
     /**
@@ -16,7 +16,7 @@ public enum Style {
     HUMP;
 
 
-    private Style(){
+    private Style() {
 
     }
 }

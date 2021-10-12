@@ -3,8 +3,9 @@ package com.starmcc.qmdata.model;
 import java.io.Serializable;
 
 /**
- * @Author: qm
- * @Date: 2019/12/14 16:13
+ * @author starmcc
+ * @version 2019/12/14 16:13
+ * 主键返回Result
  */
 public class ResultInsert implements Serializable {
 

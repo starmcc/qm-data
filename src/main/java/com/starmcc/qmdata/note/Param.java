@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author qm
- * @date 2019/1/9 11:38
- * @Description 字段标识
+ * @author starmcc
+ * @version 2019/1/9 11:38
+ * 字段标识
  */
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
@@ -17,14 +17,14 @@ public @interface Param {
     /**
      * 字段别名
      *
-     * @return
+     * @return name
      */
     String name() default "";
 
     /**
      * 是否排除该字段
      *
-     * @return
+     * @return except
      */
     boolean except() default false;
 }

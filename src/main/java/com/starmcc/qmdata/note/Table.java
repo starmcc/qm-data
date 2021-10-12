@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author qm
- * @date 2019/1/9 11:32
- * @Description 数据表标识
+ * @author starmcc
+ * @version 2019/1/9 11:32
+ * 数据表标识
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -16,14 +16,14 @@ public @interface Table {
     /**
      * 表名
      *
-     * @return
+     * @return tableName
      */
     String name() default "";
 
     /**
      * 数据库风格
      *
-     * @return
+     * @return tableStyle
      */
     Style style() default Style.UNDERLINE;
 }

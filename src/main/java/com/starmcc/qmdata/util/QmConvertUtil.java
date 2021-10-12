@@ -8,16 +8,12 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
+ * @author starmcc
+ * @version 2019/7/17 17:33
  * Map and Bean Tools
- *
- * @Author: qm
- * @Date: 2019/7/17 17:33
  */
 public class QmConvertUtil {
     /**
@@ -27,12 +23,12 @@ public class QmConvertUtil {
      * @param type 要转化的类型
      * @return 转化出来的 JavaBean 对象
      */
-    public static <T> T mapToBean(Map map, Class<T> clazz) {
+    public static <T> T mapToBean(Map map, Class<T> type) {
         try {
             // 获取类属性
-            BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+            BeanInfo beanInfo = Introspector.getBeanInfo(type);
             // 创建 JavaBean 对象
-            T obj = clazz.newInstance();
+            T obj = type.newInstance();
             // 给 JavaBean 对象的属性赋值
             PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
             for (int i = 0; i < propertyDescriptors.length; i++) {
@@ -48,13 +44,15 @@ public class QmConvertUtil {
             }
             return obj;
         } catch (IntrospectionException e) {
-            throw new QmDataException("IntrospectionException 分析类属性失败!");
+            throw new QmDataException("IntrospectionException 分析类属性失败!", e);
         } catch (InstantiationException e) {
-            throw new QmDataException("IllegalAccessException 实例化 JavaBean 失败!");
+            throw new QmDataException("IllegalAccessException 实例化 JavaBean 失败!", e);
         } catch (IllegalAccessException e) {
-            throw new QmDataException("IllegalAccessException 实例化 JavaBean 失败!");
+            throw new QmDataException("IllegalAccessException 实例化 JavaBean 失败!", e);
         } catch (InvocationTargetException e) {
-            throw new QmDataException("InvocationTargetException 调用属性的 setter 方法失败!");
+            throw new QmDataException("InvocationTargetException 调用属性的 setter 方法失败!", e);
+        } catch (Exception e) {
+            throw new QmDataException("其他异常", e);
         }
     }
 
@@ -64,12 +62,12 @@ public class QmConvertUtil {
      * @param maps 包含属性值的 mapList
      * @param type 要转化的类型
      * @param <T>  转化出来的 JavaBean 对象 List
-     * @return
+     * @return List<T>
      */
-    public static <T> List<T> mapsToBeans(List<Map> maps, Class<T> clazz) {
+    public static <T> List<T> mapsToBeans(List<Map> maps, Class<T> type) {
         List<T> list = new ArrayList<>();
         for (Map map : maps) {
-            T t = mapToBean(map, clazz);
+            T t = mapToBean(map, type);
             list.add(t);
         }
         return list;
@@ -95,7 +93,7 @@ public class QmConvertUtil {
                 if (!propertyName.equals("class")) {
                     Method readMethod = descriptor.getReadMethod();
                     Object result = readMethod.invoke(bean, new Object[0]);
-                    if (result != null) {
+                    if (Objects.nonNull(result)) {
                         returnMap.put(propertyName, result);
                     } else {
                         returnMap.put(propertyName, "");
@@ -104,11 +102,13 @@ public class QmConvertUtil {
             }
             return returnMap;
         } catch (IntrospectionException e) {
-            throw new QmDataException("IntrospectionException 分析类属性失败!");
+            throw new QmDataException("IntrospectionException 分析类属性失败!", e);
         } catch (IllegalAccessException e) {
-            throw new QmDataException("IllegalAccessException 实例化 JavaBean 失败!");
+            throw new QmDataException("IllegalAccessException 实例化 JavaBean 失败!", e);
         } catch (InvocationTargetException e) {
-            throw new QmDataException("InvocationTargetException 调用属性的 setter 方法失败!");
+            throw new QmDataException("InvocationTargetException 调用属性的 setter 方法失败!", e);
+        } catch (Exception e) {
+            throw new QmDataException("其他异常", e);
         }
     }
 
@@ -116,7 +116,7 @@ public class QmConvertUtil {
      * 将一个 List 包含 JavaBean 的集合转化为一个 List 包含 map 的集合
      *
      * @param beans 要转化的 list<JavaBean>
-     * @return
+     * @return List<Map>
      */
     public static <T> List<Map> beansToMaps(List<T> beans) {
         List<Map> list = new ArrayList<>();

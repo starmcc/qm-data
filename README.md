@@ -4,7 +4,6 @@
 
 ### 1.1 Introduce
 
-
 数据持久层在框架中已经封装成为`QmData`，开发时直接使用`QmData`提供的方法进行数据操作。
 
 它是基于`Mybatis`进行的一系列封装，由框架内部实现了`QmData`的接口。
@@ -19,14 +18,6 @@
 ### 1.3 Realization Process
 
 `Spring`中获取`SqlSessionTemplate`，进而使用`Mybatis`的`SqlSession`传递命名空间和参数列表进行一系列的封装。
-
----
-
-**注意：** 
-
-> 如果你还在使用`1.x`版本，内部还是使用`SqlSessionFactory`。
-
-> **在`2.x`版本后将被替换为`SqlSessionTemplate`，因为它是线程安全的，并且对于Spring的事务机制进行友好的支持。**
 
 
 ### 1.4 Semi Auto SQL
@@ -63,10 +54,7 @@
 
 ## 3. Environment
 
-* `slf4j 1.7.25` 
-* `2.x` > `mybatis-spring-boot-starter 2.1.3` 
-* `1.x` > `mybatis 3.4.6` 
-* `1.x` > `cglib 2.2.2` 
+* `mybatis-spring-boot-starter 2.2.0`
 
 ## 4. Main Content
 

@@ -6,10 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * @author starmcc
+ * @version 2019/7/17 21:22
  * 排序 order by
- *
- * @Author: qm
- * @Date: 2019/7/17 21:22
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
@@ -17,7 +16,8 @@ public @interface OrderBy {
 
     /**
      * sql value
-     * @return
+     *
+     * @return value
      */
     String value() default "";
 
