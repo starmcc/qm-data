@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -21,7 +22,6 @@ public final class QmDataModel<Q> implements Serializable {
 
     private static final long serialVersionUID = 6857822692226391769L;
     private static final Logger LOG = LoggerFactory.getLogger(QmDataModel.class);
-    public static final int PRIVATE = 0x00000002;
     private boolean isPrimaryKey;
     private Style style;
     private String tableName;
@@ -122,11 +122,12 @@ public final class QmDataModel<Q> implements Serializable {
         }
         // 遍历字段进行参数封装
         for (Field field : fields) {
-            // 必须是私有的属性
-            if (PRIVATE != field.getModifiers()) {
+            int modifiers = field.getModifiers();
+            if (!Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
+                // 不是私有的，或是静态的，或是常量的，都不进行序列化
                 continue;
             }
-            // 开放字段权限public
+            // 开放字段private权限
             field.setAccessible(true);
             // 判断是否需要主键策略
             if (isPrimaryKey && Objects.isNull(this.primaryKey)) {
