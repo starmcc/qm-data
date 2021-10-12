@@ -23,10 +23,10 @@ public interface QmData {
     /**
      * 通用查询列表
      *
-     * @param entity 对应表的实体类
-     * @param clamm  对应表的实体类的Class (以该对象作表名解析)
+     * @param entity 对应表的实体类 (以该对象作表名解析)
      * @return 根据参数指定的类型进行嵌套数据
      */
+    @Deprecated
     <M> List<M> autoSelectList(M entity);
 
     /**
@@ -42,9 +42,9 @@ public interface QmData {
      * 通用查询单条记录
      *
      * @param entity 实体类 (以该对象作表名解析)
-     * @param clamm  实体类class对象
      * @return 根据参数指定的类型进行嵌套数据
      */
+    @Deprecated
     <M> M autoSelectOne(M entity);
 
     /**
@@ -97,7 +97,7 @@ public interface QmData {
      * @param entity 对应表的实体类 (以该对象作表名解析)
      * @return 影响行数
      */
-
+    @Deprecated
     <M> Long autoSelectCount(M entity);
 
     /**
@@ -138,6 +138,7 @@ public interface QmData {
      * @param whereSql 条件sql
      * @return 影响行数
      */
+    @Deprecated
     <M> Long autoSelectCount(M entity, String whereSql);
 
     /**
@@ -159,6 +160,7 @@ public interface QmData {
      * @param orderBy 排序sql
      * @return 根据参数指定的类型进行嵌套数据
      */
+    @Deprecated
     <M> List<M> autoSelectList(M entity, String where, String orderBy);
 
 
@@ -179,6 +181,7 @@ public interface QmData {
      * @param where  条件sql
      * @return 根据参数指定的类型进行嵌套数据
      */
+    @Deprecated
     <M> List<M> autoSelectList(M entity, String where);
 
     /**
@@ -209,6 +212,7 @@ public interface QmData {
      * @param orderBy 排序sql
      * @return 根据参数指定的类型进行嵌套数据
      */
+    @Deprecated
     <M> M autoSelectOne(M entity, String where, String orderBy);
 
     /**
@@ -226,9 +230,9 @@ public interface QmData {
      *
      * @param entity 实体类 (以该对象作表名解析)
      * @param where  条件sql
-     * @param clamm  实体类class对象
      * @return 根据参数指定的类型进行嵌套数据
      */
+    @Deprecated
     <M> M autoSelectOne(M entity, String where);
 
     /**
